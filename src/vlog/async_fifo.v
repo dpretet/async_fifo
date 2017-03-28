@@ -42,7 +42,7 @@ module async_fifo
     reg [POINTER-1 : 0] rd_pointer, rd_pointer_g, rd_sync_1, rd_sync_2;
     reg [POINTER-1 : 0] wr_pointer, wr_pointer_g, wr_sync_1, wr_sync_2;
     
-    reg [WIDTH-1 : 0] mem [DIPTH-1 : 0];
+    reg [WIDTH-1 : 0] mem [DEPTH-1 : 0];
     
     wire [POINTER-1 : 0] rd_pointer_sync;
     wire [POINTER-1 : 0] wr_pointer_sync;
@@ -67,7 +67,6 @@ module async_fifo
     // Read logic management
     always @(posedge rd_clk or posedge arresetn) begin
         if (arresetn == 1'b0) begin
-            // read reset
             rd_pointer <= 0;
         end
         else if (empty == 1'b0 && rden == 1'b1) begin
@@ -83,12 +82,11 @@ module async_fifo
         wr_sync_2 <= wr_sync_1;
     end
     
-    //--Combinational logic--//
-    //--Binary pointer--//
+    // Binary pointer comparaison
     assign wr_full = ((wr_pointer[POINTER-1 : 0] == rd_pointer_sync[POINTER-1 : 0]) &&
                     (wr_pointer[POINTER] != rd_pointer_sync[POINTER] ));
     
-    //-- Gray pointer--//
+    // Gray counter comparaison
     //assign wr_full  = ((wr_pointer[POINTER-2 : 0] == rd_pointer_sync[POINTER-2 : 0]) &&
     //                (wr_pointer[POINTER-1] != rd_pointer_sync[POINTER-1]) &&
     //                (wr_pointer[POINTER] != rd_pointer_sync[POINTER]));
@@ -98,12 +96,17 @@ module async_fifo
     assign rd_empty = ((wr_pointer_sync == rd_pointer) == 0) ? 1'b1 : 1'b0;
     
     
-    //--binary code to gray code--//
+    // Convert to gray before moving the pointers 
+    // to the destination clock domain
     assign wr_pointer_g = wr_pointer ^ (wr_pointer >> 1);
     assign rd_pointer_g = rd_pointer ^ (rd_pointer >> 1);
-    //--gray code to binary code--//
+    
+    
+    // Convert back to binary after the synchronization from 
+    // the source domain
     assign wr_pointer_sync = wr_sync_2 ^ (wr_sync_2 >> 1) ^
                             (wr_sync_2 >> 2) ^ (wr_sync_2 >> 3);
+    
     assign rd_pointer_sync = rd_sync_2 ^ (rd_sync_2 >> 1) ^
                             (rd_sync_2 >> 2) ^ (rd_sync_2 >> 3);
 
