@@ -13,6 +13,9 @@ It is widely inspired by the excellent article from Clifford Cummings,
 `Simulation and Synthesis Techniques for Asynchronous FIFO Design 
 <http://www.sunburst-design.com/papers/CummingsSNUG2002SJ_FIFO1.pdf>`_
 
+The simulation available use Icarus Verilog and `SVUT <https://github.com/ThotIP/svut>`_
+tool to run the test
+
 Documentation
 -------------
 
@@ -24,3 +27,4 @@ updates and the known issues.
 * `architecture <doc/architecture.rst>`_
 * `testplan <doc/testplan.rst>`_
 * `release note <doc/release.rst>`_
+

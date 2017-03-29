@@ -34,13 +34,15 @@ module async_fifo
 	input  wire             arresetn,
 	input  wire             rden,
 	output wire [WIDTH-1:0] data_out,
-	output wire             rd_empty,
+	output wire             rd_empty
 	);
 
-    parameter DEPTH = 1 << POINTER;
+    localparam DEPTH = 1 << POINTER;
 
-    reg [POINTER-1 : 0] rd_pointer, rd_pointer_g, rd_sync_1, rd_sync_2;
-    reg [POINTER-1 : 0] wr_pointer, wr_pointer_g, wr_sync_1, wr_sync_2;
+    reg  [POINTER-1 : 0] rd_pointer, rd_sync_1, rd_sync_2;
+    reg  [POINTER-1 : 0] wr_pointer, wr_sync_1, wr_sync_2;
+    wire [POINTER-1 : 0] rd_pointer_g;
+    wire [POINTER-1 : 0] wr_pointer_g;
     
     reg [WIDTH-1 : 0] mem [DEPTH-1 : 0];
     
@@ -52,7 +54,7 @@ module async_fifo
         if (awresetn == 1'b0) begin
             wr_pointer <= 0;
         end
-        else if (full == 1'b0 && wren == 1'b1) begin
+        else if (wr_full == 1'b0 && wren == 1'b1) begin
             wr_pointer <= wr_pointer + 1;
             mem[wr_pointer[POINTER-1 : 0]] <= data_in;
         end
@@ -69,7 +71,7 @@ module async_fifo
         if (arresetn == 1'b0) begin
             rd_pointer <= 0;
         end
-        else if (empty == 1'b0 && rden == 1'b1) begin
+        else if (rd_empty == 1'b0 && rden == 1'b1) begin
             rd_pointer <= rd_pointer + 1;
         end
     end
