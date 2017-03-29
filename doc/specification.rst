@@ -45,7 +45,7 @@ This document lists all the features the FIFO supports
 
         * A data bus, passing the information to store.
 
-    * Read side uses;
+    * Read side uses:
 
         * A read enable control (rden), enabling the data read. This control increments
           the read pointer to address the next word to read.
