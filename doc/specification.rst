@@ -6,13 +6,13 @@ This document lists all the features the FIFO supports
 * The module is a full synchronized module, working on clock rising edge.
 
 * It can be put under reset on both sides. For proper behavior, both side 
-have to be reset at the same time before any data transmission/reception.
+  have to be reset at the same time before any data transmission/reception.
 
 * It can be synthetized either for Xilinx and Altera FPGAs.
 
 * It supports built-in RAM of the FPGAs, used by inference. This 
-ensures an easy way to include the module in a design, regardless
-the FPGA family.
+  ensures an easy way to include the module in a design, regardless
+  the FPGA family.
 
 * It can be configured for any data bus width, specified in bits.
 
