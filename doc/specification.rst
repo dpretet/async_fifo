@@ -36,7 +36,7 @@ This document lists all the features the FIFO supports
          increments the write pointer to point the next RAM address to write.
             
             * wren doesn't have to be asserted when "full" flag is asserted. The word
-            passed to the write side will be losted.
+              passed to the write side will be losted.
             
             * wren can be asserted continuously, or occasionally.
         
@@ -51,7 +51,7 @@ This document lists all the features the FIFO supports
           the read pointer to address the next word to read.
             
             * rden doesn't have to be asserted when empty flag is enabled. If asserted,
-            the data under read can be a valid data.
+              the data under read can be a valid data.
         
             * rden can be asserted continuously, or occasionally.
         
