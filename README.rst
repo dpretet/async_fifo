@@ -13,8 +13,8 @@ It is widely inspired by the excellent article from Clifford Cummings,
 `Simulation and Synthesis Techniques for Asynchronous FIFO Design 
 <http://www.sunburst-design.com/papers/CummingsSNUG2002SJ_FIFO1.pdf>`_
 
-The simulation available use Icarus Verilog and `SVUT <https://github.com/ThotIP/svut>`_
-tool to run the test
+The simulation testcases available use `Icarus Verilog <http://iverilog.icarus.com>`_
+and `SVUT <https://github.com/ThotIP/svut>`_ tool to run the tests.
 
 Documentation
 -------------
