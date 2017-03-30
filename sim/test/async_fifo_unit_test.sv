@@ -50,6 +50,7 @@ module async_fifo_unit_test;
 
     task setup();
     begin
+        #0;
         wr_arstn = 1;
         rd_arstn = 1;
         init_write();
@@ -62,7 +63,9 @@ module async_fifo_unit_test;
 
     task teardown();
     begin
-        // teardown() runs when a test ends
+        #100;
+        @(posedge wr_clk);
+        @(posedge rd_clk);
     end
     endtask
 

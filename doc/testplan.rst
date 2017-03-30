@@ -2,7 +2,7 @@ Testplan
 ========
 
 This document describes the faetures to test,
-and the general scenarios put in place to stress
+and the general scenarios to put in place to stress
 the IP behavior:
 
 Clock frequency relationship
@@ -45,7 +45,7 @@ A second focus is put on read/write enable assertion:
 Test coverage
 -------------
 
-To ensure a wide feature coverage is done, both clock frequency scale and 
-read/write enable assertions have to be tested together. Big range of higher frequency 
-scale factor doesn't have to considered. Only few can be done with good confidence on
-IP behavior.
+To ensure a wide feature feature coverage is performed, both clock frequency scale and 
+read/write enable assertions have to be tested together. Big range over higher frequency 
+scale factor doesn't have to considered. Only few conbinations can be tested for
+good confidence on the IP behavior.
