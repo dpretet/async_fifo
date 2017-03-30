@@ -6,8 +6,8 @@ module async_fifo_unit_test;
 
     `SVUT_SETUP
 
-    parameter WIDTH		= 8;
-    parameter POINTER	= 4;
+    parameter WIDTH  = 8;
+    parameter POINTER = 4;
 
     reg              wr_clk;
     reg              awresetn;
@@ -22,8 +22,8 @@ module async_fifo_unit_test;
 
     async_fifo 
     #(
-    .WIDTH      (WIDTH),
-    .POINTER    (POINTER)
+    ,
+    POINTER
     )
     dut 
     (
@@ -39,10 +39,12 @@ module async_fifo_unit_test;
     rd_empty
     );
 
-    initial wr_clk = 0;
-    initial rd_clk = 0;
-    always #2 wr_clk <= ~wr_clk;
-    always #2 rd_clk <= ~rd_clk;
+    // An example to create a clock
+    // initial aclk = 0;
+    // always #2 aclk <= ~aclk;
+
+    // An example to dump data for visualization
+    // initial $dumpvars(0,async_fifo_unit_test);
 
     task setup();
     begin

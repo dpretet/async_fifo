@@ -1,12 +1,12 @@
 /*
     Copyright 2017 Damien Pretet ThotIP
-    
+
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
-    
+
         http://www.apache.org/licenses/LICENSE-2.0
-    
+
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,23 +19,23 @@
 
 module async_fifo
 
-	#(
-	parameter WIDTH		= 8,
-	parameter POINTER	= 4
-	)(
+    #(
+    parameter WIDTH     = 8,
+    parameter POINTER   = 4
+    )(
     // Write side of the FIFO
-	input  wire             wr_clk,
-	input  wire             awresetn,
-	input  wire             wren,
-	input  wire [WIDTH-1:0] data_in,
-	output wire             wr_full,
+    input  wire             wr_clk,
+    input  wire             awresetn,
+    input  wire             wren,
+    input  wire [WIDTH-1:0] data_in,
+    output wire             wr_full,
     // Read side of the FIFO
-	input  wire             rd_clk,
-	input  wire             arresetn,
-	input  wire             rden,
-	output wire [WIDTH-1:0] data_out,
-	output wire             rd_empty
-	);
+    input  wire             rd_clk,
+    input  wire             arresetn,
+    input  wire             rden,
+    output wire [WIDTH-1:0] data_out,
+    output wire             rd_empty
+    );
 
     localparam DEPTH = 1 << POINTER;
 
@@ -43,12 +43,12 @@ module async_fifo
     reg  [POINTER-1 : 0] wr_pointer, wr_sync_1, wr_sync_2;
     wire [POINTER-1 : 0] rd_pointer_g;
     wire [POINTER-1 : 0] wr_pointer_g;
-    
+
     reg [WIDTH-1 : 0] mem [DEPTH-1 : 0];
-    
+
     wire [POINTER-1 : 0] rd_pointer_sync;
     wire [POINTER-1 : 0] wr_pointer_sync;
-    
+
     // Write logic management
     always @(posedge wr_clk or posedge awresetn) begin
         if (awresetn == 1'b0) begin
@@ -59,13 +59,13 @@ module async_fifo
             mem[wr_pointer[POINTER-1 : 0]] <= data_in;
         end
     end
-    
+
     // Synchronization of read pointer with write clock
     always @(posedge wr_clk) begin
         rd_sync_1 <= rd_pointer_g;
         rd_sync_2 <= rd_sync_1;
     end
-    
+
     // Read logic management
     always @(posedge rd_clk or posedge arresetn) begin
         if (arresetn == 1'b0) begin
@@ -75,40 +75,40 @@ module async_fifo
             rd_pointer <= rd_pointer + 1;
         end
     end
-    
+
     assign data_out = mem[rd_pointer[POINTER-1 : 0]];
-    
+
     // Write pointer synchronization with read clock
     always @(posedge rd_clk) begin
         wr_sync_1 <= wr_pointer_g;
         wr_sync_2 <= wr_sync_1;
     end
-    
+
     // Binary pointer comparaison
     assign wr_full = ((wr_pointer[POINTER-1 : 0] == rd_pointer_sync[POINTER-1 : 0]) &&
                     (wr_pointer[POINTER] != rd_pointer_sync[POINTER] ));
-    
+
     // Gray counter comparaison
     //assign wr_full  = ((wr_pointer[POINTER-2 : 0] == rd_pointer_sync[POINTER-2 : 0]) &&
     //                (wr_pointer[POINTER-1] != rd_pointer_sync[POINTER-1]) &&
     //                (wr_pointer[POINTER] != rd_pointer_sync[POINTER]));
-    
+
     // The FIFO is considered as empty when pointer match the same address
-    // No more data remains to read 
+    // No more data remains to read
     assign rd_empty = ((wr_pointer_sync == rd_pointer) == 0) ? 1'b1 : 1'b0;
-    
-    
-    // Convert to gray before moving the pointers 
+
+
+    // Convert to gray before moving the pointers
     // to the destination clock domain
     assign wr_pointer_g = wr_pointer ^ (wr_pointer >> 1);
     assign rd_pointer_g = rd_pointer ^ (rd_pointer >> 1);
-    
-    
-    // Convert back to binary after the synchronization from 
+
+
+    // Convert back to binary after the synchronization from
     // the source domain
     assign wr_pointer_sync = wr_sync_2 ^ (wr_sync_2 >> 1) ^
                             (wr_sync_2 >> 2) ^ (wr_sync_2 >> 3);
-    
+
     assign rd_pointer_sync = rd_sync_2 ^ (rd_sync_2 >> 1) ^
                             (rd_sync_2 >> 2) ^ (rd_sync_2 >> 3);
 
