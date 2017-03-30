@@ -25,38 +25,52 @@ module async_fifo
     )(
     // Write side of the FIFO
     input  wire             wr_clk,
-    input  wire             awresetn,
-    input  wire             wren,
-    input  wire [WIDTH-1:0] data_in,
+    input  wire             wr_arstn,
+    input  wire             wr_en,
+    input  wire [WIDTH-1:0] wr_data,
     output wire             wr_full,
     // Read side of the FIFO
     input  wire             rd_clk,
-    input  wire             arresetn,
-    input  wire             rden,
-    output wire [WIDTH-1:0] data_out,
+    input  wire             rd_arstn,
+    input  wire             rd_en,
+    output wire [WIDTH-1:0] rd_data,
     output wire             rd_empty
     );
 
     localparam DEPTH = 1 << POINTER;
 
-    reg  [POINTER-1 : 0] rd_pointer, rd_sync_1, rd_sync_2;
-    reg  [POINTER-1 : 0] wr_pointer, wr_sync_1, wr_sync_2;
-    wire [POINTER-1 : 0] rd_pointer_g;
-    wire [POINTER-1 : 0] wr_pointer_g;
+    // Read pointer managed by rd_clk
+    reg  [POINTER:0] rd_pointer;
+    // Write pointer managed by wr_clk
+    reg  [POINTER:0] wr_pointer;
 
-    reg [WIDTH-1 : 0] mem [DEPTH-1 : 0];
+    // Pointers used to pass between the domains
+    reg  [POINTER:0] rd_sync_1;
+    reg  [POINTER:0] wr_sync_1;
+    reg  [POINTER:0] rd_sync_2;
+    reg  [POINTER:0] wr_sync_2;
+    wire [POINTER:0] rd_pointer_g;
+    wire [POINTER:0] wr_pointer_g;
 
-    wire [POINTER-1 : 0] rd_pointer_sync;
-    wire [POINTER-1 : 0] wr_pointer_sync;
+    // Pointers used across the domains:
+
+    // Used in write domain
+    wire [POINTER:0] rd_pointer_sync;
+    // Used in read domain
+    wire [POINTER:0] wr_pointer_sync;
+
+    // The memory block RAM used to store and
+    // pass the information
+    reg  [WIDTH-1:0] mem [DEPTH-1 : 0];
 
     // Write logic management
-    always @(posedge wr_clk or posedge awresetn) begin
-        if (awresetn == 1'b0) begin
+    always @(posedge wr_clk or negedge wr_arstn) begin
+        if (wr_arstn == 1'b0) begin
             wr_pointer <= 0;
         end
-        else if (wr_full == 1'b0 && wren == 1'b1) begin
+        else if (wr_full == 1'b0 && wr_en == 1'b1) begin
             wr_pointer <= wr_pointer + 1;
-            mem[wr_pointer[POINTER-1 : 0]] <= data_in;
+            mem[wr_pointer[POINTER-1 : 0]] <= wr_data;
         end
     end
 
@@ -67,16 +81,16 @@ module async_fifo
     end
 
     // Read logic management
-    always @(posedge rd_clk or posedge arresetn) begin
-        if (arresetn == 1'b0) begin
+    always @(posedge rd_clk or negedge rd_arstn) begin
+        if (rd_arstn == 1'b0) begin
             rd_pointer <= 0;
         end
-        else if (rd_empty == 1'b0 && rden == 1'b1) begin
+        else if (rd_empty == 1'b0 && rd_en == 1'b1) begin
             rd_pointer <= rd_pointer + 1;
         end
     end
 
-    assign data_out = mem[rd_pointer[POINTER-1 : 0]];
+    assign rd_data = mem[rd_pointer[POINTER-1 : 0]];
 
     // Write pointer synchronization with read clock
     always @(posedge rd_clk) begin
@@ -85,13 +99,13 @@ module async_fifo
     end
 
     // Binary pointer comparaison
-    assign wr_full = ((wr_pointer[POINTER-1 : 0] == rd_pointer_sync[POINTER-1 : 0]) &&
-                    (wr_pointer[POINTER] != rd_pointer_sync[POINTER] ));
+    //assign wr_full = ((wr_pointer[POINTER-1 : 0] == rd_pointer_sync[POINTER-1 : 0]) &&
+    //                  (wr_pointer[POINTER] != rd_pointer_sync[POINTER] )) ? 1'b1 : 1'b0;
 
     // Gray counter comparaison
-    //assign wr_full  = ((wr_pointer[POINTER-2 : 0] == rd_pointer_sync[POINTER-2 : 0]) &&
-    //                (wr_pointer[POINTER-1] != rd_pointer_sync[POINTER-1]) &&
-    //                (wr_pointer[POINTER] != rd_pointer_sync[POINTER]));
+    assign wr_full  = ((wr_pointer[POINTER-2 : 0] == rd_pointer_sync[POINTER-2 : 0]) &&
+                       (wr_pointer[POINTER-1] != rd_pointer_sync[POINTER-1]) &&
+                       (wr_pointer[POINTER] != rd_pointer_sync[POINTER])) ? 1'b1 : 1'b0;
 
     // The FIFO is considered as empty when pointer match the same address
     // No more data remains to read
@@ -106,11 +120,9 @@ module async_fifo
 
     // Convert back to binary after the synchronization from
     // the source domain
-    assign wr_pointer_sync = wr_sync_2 ^ (wr_sync_2 >> 1) ^
-                            (wr_sync_2 >> 2) ^ (wr_sync_2 >> 3);
+    assign wr_pointer_sync = wr_sync_2 ^ (wr_sync_2 >> 1) ^ (wr_sync_2 >> 2) ^ (wr_sync_2 >> 3);
 
-    assign rd_pointer_sync = rd_sync_2 ^ (rd_sync_2 >> 1) ^
-                            (rd_sync_2 >> 2) ^ (rd_sync_2 >> 3);
+    assign rd_pointer_sync = rd_sync_2 ^ (rd_sync_2 >> 1) ^ (rd_sync_2 >> 2) ^ (rd_sync_2 >> 3);
 
 endmodule
 
