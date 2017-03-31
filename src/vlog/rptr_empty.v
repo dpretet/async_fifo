@@ -33,7 +33,8 @@ module rptr_empty
     
     reg  [ADDRSIZE:0] rbin;
     wire [ADDRSIZE:0] rgraynext, rbinnext;
-    
+    wire rempty_val;
+
     //-------------------
     // GRAYSTYLE2 pointer
     //-------------------

@@ -18,13 +18,18 @@
 `default_nettype none
 
 module fifo
+    
     #(
     parameter DSIZE = 8,
     parameter ASIZE = 4
     )(
     input  [DSIZE-1:0] wdata,
-    input winc, wclk, wrst_n,
-    input rinc, rclk, rrst_n,
+    input winc,
+    input wclk,
+    input wrst_n,
+    input rinc,
+    input rclk,
+    input rrst_n,
     output [DSIZE-1:0] rdata,
     output             wfull,
     output             rempty

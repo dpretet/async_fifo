@@ -1,5 +1,4 @@
 `include "svut_h.sv"
-`include "../../src/vlog/fifo.v"
 `timescale 1 ns / 1 ps
 
 module fifo_unit_test;
@@ -9,12 +8,16 @@ module fifo_unit_test;
     parameter DSIZE = 8;
     parameter ASIZE = 4;
 
-    [DSIZE-1:0] wdata;
-    winc; wclk; wrst_n;
-    rinc; rclk; rrst_n;
-    [DSIZE-1:0] rdata;
-    wfull;
-    rempty;
+    wire [DSIZE-1:0] wdata;
+    wire winc;
+    wire wclk;
+    wire wrst_n;
+    wire rinc;
+    wire rclk;
+    wire rrst_n;
+    wire [DSIZE-1:0] rdata;
+    wire wfull;
+    wire rempty;
 
     fifo 
     #(
@@ -24,7 +27,11 @@ module fifo_unit_test;
     dut 
     (
     wdata,
+    winc,
+    wclk,
     wrst_n,
+    rinc,
+    rclk,
     rrst_n,
     rdata,
     wfull,

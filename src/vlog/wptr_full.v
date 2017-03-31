@@ -23,7 +23,9 @@ module wptr_full
     #(
     parameter ADDRSIZE = 4
     )(
-    input winc, wclk, wrst_n);
+    input winc,
+    input wclk,
+    input  wrst_n,
     input      [ADDRSIZE  :0] wq2_rptr,
     output reg                wfull,
     output     [ADDRSIZE-1:0] waddr,
@@ -32,7 +34,8 @@ module wptr_full
 
     reg  [ADDRSIZE:0] wbin;
     wire [ADDRSIZE:0] wgraynext, wbinnext;
-    
+    wire wfull_val;
+
     // GRAYSTYLE2 pointer
     always @(posedge wclk or negedge wrst_n)
         if (!wrst_n) 

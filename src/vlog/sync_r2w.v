@@ -23,7 +23,7 @@ module sync_r2w
     parameter ADDRSIZE = 4
     )(
     input  wire             wclk,
-    input  wire             wrst_ni,
+    input  wire             wrst_n,
     input      [ADDRSIZE:0] rptr,
     output reg [ADDRSIZE:0] wq2_rptr
     );
