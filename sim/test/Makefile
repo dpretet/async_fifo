@@ -1,7 +1,7 @@
 UT="*unit_test.sv"
 
 test:
-	@svutRun.py
+	@svutRun.py -f files.f
 
 gui:
 	@svutRun.py -gui

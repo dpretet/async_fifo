@@ -1,4 +1,4 @@
-../../src/vlog/fifo.v
+../../src/vlog/async_fifo.v
 ../../src/vlog/fifo_2mem.v
 ../../src/vlog/rptr_empty.v
 ../../src/vlog/sync_r2w.v

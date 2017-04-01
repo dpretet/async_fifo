@@ -1,96 +1,148 @@
 `include "svut_h.sv"
-`include "../../src/vlog/async_fifo.v"
 `timescale 1 ns / 1 ps
 
 module async_fifo_unit_test;
 
     `SVUT_SETUP
 
-    parameter WIDTH  = 8;
-    parameter POINTER = 4;
+    integer i;
 
-    reg              wr_clk;
-    reg              wr_arstn;
-    reg              wr_en;
-    reg  [WIDTH-1:0] wr_data;
-    wire             wr_full;
-    reg              rd_clk;
-    reg              rd_arstn;
-    reg              rd_en;
-    wire [WIDTH-1:0] rd_data;
-    wire             rd_empty;
+    parameter DSIZE = 32;
+    parameter ASIZE = 4;
+
+    reg              wclk;
+    reg              wrst_n;
+    reg              winc;
+    reg  [DSIZE-1:0] wdata;
+    wire             wfull;
+    reg              rclk;
+    reg              rrst_n;
+    reg              rinc;
+    wire [DSIZE-1:0] rdata;
+    wire             rempty;
 
     async_fifo 
     #(
-    .WIDTH (WIDTH),
-    .POINTER (POINTER)
+    DSIZE,
+    ASIZE
     )
     dut 
     (
-    wr_clk,
-    wr_arstn,
-    wr_en,
-    wr_data,
-    wr_full,
-    rd_clk,
-    rd_arstn,
-    rd_en,
-    rd_data,
-    rd_empty
+    wclk,
+    wrst_n,
+    winc,
+    wdata,
+    wfull,
+    rclk,
+    rrst_n,
+    rinc,
+    rdata,
+    rempty
     );
 
     // An example to create a clock
-    initial wr_clk = 0;
-    initial rd_clk = 0;
-    always #2 wr_clk = ~wr_clk;
-    always #2 rd_clk = ~rd_clk;
+    initial wclk = 1'b0;
+    always #2 wclk <= ~wclk;
+    initial rclk = 1'b0;
+    always #3 rclk <= ~rclk;
 
     // An example to dump data for visualization
     initial $dumpvars(0,async_fifo_unit_test);
 
     task setup();
     begin
-        #0;
-        wr_arstn = 1;
-        rd_arstn = 1;
-        init_write();
-        init_read();
-        #50;
-        wr_arstn = 1;
-        rd_arstn = 1;
+        wrst_n = 1'b0;
+        winc = 1'b0;
+        wdata = 0;
+        rrst_n = 1'b0;
+        rinc = 1'b0;
+        #100;
     end
     endtask
 
     task teardown();
     begin
-        #100;
-        @(posedge wr_clk);
-        @(posedge rd_clk);
-    end
-    endtask
-
-    task init_write();
-    begin
-        wr_arstn = 0;
-        wr_en = 1'b0;
-        wr_data = 0;
-    end
-    endtask
-
-    task init_read();
-    begin
-        rd_arstn = 0;
-        rd_en = 1'b0;
+        // teardown() runs when a test ends
     end
     endtask
 
     `UNIT_TESTS
 
-    `UNIT_TEST(INIT_FIFO)
-        wait (wr_full == 1'b0);
-        wait (rd_empty == 1'b0);
+    `UNIT_TEST(IDLE)
+        `INFO("Start IDLE test");
+        wrst_n = 1;
+        rrst_n = 1;
+        #200;
+        `FAIL_IF(wfull);
+        `FAIL_IF(!rempty);
     `UNIT_TEST_END
 
+    `UNIT_TEST(SIMPLE_WRITE_AND_READ)
+        `INFO("Simple write then read");
+        wrst_n = 1;
+        rrst_n = 1;
+        #200;
+        @(posedge wclk)
+        winc = 1;
+        wdata = 32'hA;
+        @(posedge wclk)
+        winc = 0;
+
+        @(posedge rclk)
+        wait (rempty == 0);
+        `FAIL_IF_NOT_EQUAL(rdata, 32'hA);
+
+    `UNIT_TEST_END
+
+    `UNIT_TEST(MULTIPLE_WRITE_AND_READ)
+        `INFO("Multiple write then read");
+        wrst_n = 1;
+        rrst_n = 1;
+        #200;
+        for (i=0; i<20; i = i+1) begin
+            @(posedge wclk)
+            winc = 1;
+            wdata = i;
+            @(posedge wclk)
+            winc = 0;
+
+            @(posedge rclk)
+            wait (rempty == 0);
+            `FAIL_IF_NOT_EQUAL(rdata, i);
+        end
+    `UNIT_TEST_END
+
+    `UNIT_TEST(TEST_FULL_FLAG)
+        `INFO("Test full flag test");
+        wrst_n = 1;
+        rrst_n = 1;
+        #200;
+        @(posedge wclk)
+        for (i=0; i<2**ASIZE; i = i+1) begin
+            @(posedge wclk)
+            winc = 1;
+            wdata = i;
+            `FAIL_IF_NOT_EQUAL(wfull, 1);
+        end
+        @(posedge wclk)
+        #50;
+    `UNIT_TEST_END
+
+    `UNIT_TEST(TEST_EMPTY_FLAG)
+        `INFO("Test empty flag test");
+        wrst_n = 1;
+        rrst_n = 1;
+        #200;
+        @(posedge wclk)
+        for (i=0; i<2**ASIZE; i = i+1) begin
+            @(posedge wclk)
+            winc = 1;
+            wdata = i;
+            `FAIL_IF_NOT_EQUAL(wfull, 1);
+        end
+        @(posedge wclk)
+        #50;
+    `UNIT_TEST_END
     `UNIT_TESTS_END
 
 endmodule
