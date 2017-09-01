@@ -113,8 +113,9 @@ module async_fifo_unit_test;
             @(posedge wclk)
             winc = 1;
             wdata = i;
-            `FAIL_IF_NOT_EQUAL(wfull, 1);
+            `FAIL_IF_EQUAL(wfull, 1);
         end
+        `FAIL_IF_NOT_EQUAL(wfull, 1);
         @(posedge wclk)
         #50;
     `UNIT_TEST_END

@@ -3,7 +3,7 @@ UT="*unit_test.sv"
 test:
 	@svutRun.py -f files.f
 
-gui:
+gui: test
 	@svutRun.py -gui
 
 clean:
