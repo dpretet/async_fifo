@@ -3,8 +3,8 @@ UT="*unit_test.sv"
 test:
 	@svutRun.py -f files.f
 
-gui: test
-	@svutRun.py -gui
+gui:
+	@svutRun.py -f files.f -gui
 
 clean:
 	@-rm -f *.vcd
