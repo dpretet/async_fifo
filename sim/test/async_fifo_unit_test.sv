@@ -57,6 +57,10 @@ module async_fifo_unit_test;
         rrst_n = 1'b0;
         rinc = 1'b0;
         #100;
+        wrst_n = 1;
+        rrst_n = 1;
+        #200;
+        @(posedge wclk);
     end
     endtask
 
@@ -70,18 +74,12 @@ module async_fifo_unit_test;
 
     `UNIT_TEST(IDLE)
         `INFO("Start IDLE test");
-        wrst_n = 1;
-        rrst_n = 1;
-        #200;
         `FAIL_IF(wfull);
         `FAIL_IF(!rempty);
     `UNIT_TEST_END
 
     `UNIT_TEST(SIMPLE_WRITE_AND_READ)
         `INFO("Simple write then read");
-        wrst_n = 1;
-        rrst_n = 1;
-        #200;
         @(posedge wclk)
         winc = 1;
         wdata = 32'hA;
@@ -96,16 +94,12 @@ module async_fifo_unit_test;
 
     `UNIT_TEST(MULTIPLE_WRITE_AND_READ)
         `INFO("Multiple write then read");
-        wrst_n = 1;
-        rrst_n = 1;
-        #200;
         for (i=0; i<20; i = i+1) begin
             @(posedge wclk)
             winc = 1;
             wdata = i;
             @(posedge wclk)
             winc = 0;
-
             @(posedge rclk)
             wait (rempty == 0);
             `FAIL_IF_NOT_EQUAL(rdata, i);
@@ -114,9 +108,6 @@ module async_fifo_unit_test;
 
     `UNIT_TEST(TEST_FULL_FLAG)
         `INFO("Test full flag test");
-        wrst_n = 1;
-        rrst_n = 1;
-        #200;
         @(posedge wclk)
         for (i=0; i<2**ASIZE; i = i+1) begin
             @(posedge wclk)
@@ -130,9 +121,6 @@ module async_fifo_unit_test;
 
     `UNIT_TEST(TEST_EMPTY_FLAG)
         `INFO("Test empty flag test");
-        wrst_n = 1;
-        rrst_n = 1;
-        #200;
         @(posedge wclk)
         for (i=0; i<2**ASIZE; i = i+1) begin
             @(posedge wclk)
@@ -143,6 +131,7 @@ module async_fifo_unit_test;
         @(posedge wclk)
         #50;
     `UNIT_TEST_END
+
     `UNIT_TESTS_END
 
 endmodule
