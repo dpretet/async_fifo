@@ -73,19 +73,22 @@ module async_fifo_unit_test;
     `UNIT_TESTS
 
     `UNIT_TEST(IDLE)
+        
         `INFO("Start IDLE test");
         `FAIL_IF(wfull);
         `FAIL_IF(!rempty);
+    
     `UNIT_TEST_END
 
     `UNIT_TEST(SIMPLE_WRITE_AND_READ)
+
         `INFO("Simple write then read");
+        
         @(posedge wclk)
         winc = 1;
         wdata = 32'hA;
         @(posedge wclk)
         winc = 0;
-
         @(posedge rclk)
         wait (rempty == 0);
         `FAIL_IF_NOT_EQUAL(rdata, 32'hA);
@@ -93,7 +96,9 @@ module async_fifo_unit_test;
     `UNIT_TEST_END
 
     `UNIT_TEST(MULTIPLE_WRITE_AND_READ)
+
         `INFO("Multiple write then read");
+        
         for (i=0; i<20; i = i+1) begin
             @(posedge wclk)
             winc = 1;
@@ -104,33 +109,38 @@ module async_fifo_unit_test;
             wait (rempty == 0);
             `FAIL_IF_NOT_EQUAL(rdata, i);
         end
+
     `UNIT_TEST_END
 
     `UNIT_TEST(TEST_FULL_FLAG)
+
         `INFO("Test full flag test");
-        @(posedge wclk)
+        
         for (i=0; i<2**ASIZE; i = i+1) begin
             @(posedge wclk)
             winc = 1;
             wdata = i;
-            `FAIL_IF_EQUAL(wfull, 1);
         end
-        `FAIL_IF_NOT_EQUAL(wfull, 1);
         @(posedge wclk)
+        @(posedge wclk)
+        @(posedge wclk)
+        `FAIL_IF_NOT_EQUAL(wfull, 1);
         #50;
+    
     `UNIT_TEST_END
 
     `UNIT_TEST(TEST_EMPTY_FLAG)
+        
         `INFO("Test empty flag test");
-        @(posedge wclk)
+        
         for (i=0; i<2**ASIZE; i = i+1) begin
             @(posedge wclk)
             winc = 1;
             wdata = i;
-            `FAIL_IF_NOT_EQUAL(wfull, 1);
         end
-        @(posedge wclk)
+        `FAIL_IF_NOT_EQUAL(rempty, 1);
         #50;
+
     `UNIT_TEST_END
 
     `UNIT_TESTS_END
