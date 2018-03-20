@@ -1,42 +1,96 @@
 [*]
-[*] GTKWave Analyzer v3.3.66 (w)1999-2015 BSI
-[*] Fri Sep  1 12:55:43 2017
+[*] GTKWave Analyzer v3.3.85 (w)1999-2017 BSI
+[*] Wed Oct  4 21:08:19 2017
 [*]
-[dumpfile] "/home/damien/workspace/async_fifo/sim/test/dump.lxt"
-[dumpfile_mtime] "Fri Sep  1 12:55:22 2017"
-[dumpfile_size] 3913
-[savefile] "/home/damien/workspace/async_fifo/sim/test/wave.gtkw"
-[timestart] 0
-[size] 1000 600
-[pos] -1 -1
-*0.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[dumpfile] "/Users/damien/dev/verilog/async_fifo/sim/test/dump.lxt"
+[dumpfile_mtime] "Wed Oct  4 20:53:16 2017"
+[dumpfile_size] 3687
+[savefile] "/Users/damien/dev/verilog/async_fifo/sim/test/wave.gtkw"
+[timestart] 1089250
+[size] 1920 1056
+[pos] -1 0
+*-13.241215 1077000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] async_fifo_unit_test.
+[treeopen] async_fifo_unit_test.dut.
 [sst_width] 196
-[signals_width] 238
+[signals_width] 332
 [sst_expanded] 1
-[sst_vpaned_height] 150
-@22
-async_fifo_unit_test.i[31:0]
-@28
-async_fifo_unit_test.rclk[0]
-@22
-async_fifo_unit_test.rdata[31:0]
-@28
-async_fifo_unit_test.rempty[0]
-async_fifo_unit_test.rinc[0]
-async_fifo_unit_test.rrst_n[0]
+[sst_vpaned_height] 575
+@200
+-TB
 @22
 async_fifo_unit_test.svut_error[31:0]
 async_fifo_unit_test.svut_nb_test[31:0]
 async_fifo_unit_test.svut_nb_test_success[31:0]
-async_fifo_unit_test.svut_timeout[31:0]
-async_fifo_unit_test.svut_timeout_max[31:0]
+async_fifo_unit_test.i[31:0]
 @28
 async_fifo_unit_test.wclk[0]
+async_fifo_unit_test.wrst_n[0]
+async_fifo_unit_test.winc[0]
 @22
 async_fifo_unit_test.wdata[31:0]
 @28
 async_fifo_unit_test.wfull[0]
-async_fifo_unit_test.winc[0]
-async_fifo_unit_test.wrst_n[0]
+async_fifo_unit_test.rclk[0]
+async_fifo_unit_test.rrst_n[0]
+async_fifo_unit_test.rinc[0]
+@22
+async_fifo_unit_test.rdata[31:0]
+@28
+async_fifo_unit_test.rempty[0]
+@200
+-DUT
+@28
+async_fifo_unit_test.dut.rclk[0]
+async_fifo_unit_test.dut.rrst_n[0]
+async_fifo_unit_test.dut.rinc[0]
+@22
+async_fifo_unit_test.dut.raddr[3:0]
+async_fifo_unit_test.dut.rdata[31:0]
+@28
+async_fifo_unit_test.dut.rempty[0]
+@22
+async_fifo_unit_test.dut.rptr[4:0]
+async_fifo_unit_test.dut.rq2_wptr[4:0]
+@28
+async_fifo_unit_test.dut.wclk[0]
+async_fifo_unit_test.dut.wrst_n[0]
+async_fifo_unit_test.dut.winc[0]
+async_fifo_unit_test.dut.wfull[0]
+@22
+async_fifo_unit_test.dut.wdata[31:0]
+async_fifo_unit_test.dut.wptr[4:0]
+async_fifo_unit_test.dut.wq2_rptr[4:0]
+@200
+-FIFO MEM
+@28
+async_fifo_unit_test.dut.fifomem.wclk[0]
+async_fifo_unit_test.dut.fifomem.wclken[0]
+@22
+async_fifo_unit_test.dut.fifomem.waddr[3:0]
+async_fifo_unit_test.dut.fifomem.wdata[31:0]
+@28
+async_fifo_unit_test.dut.fifomem.wfull[0]
+@22
+async_fifo_unit_test.dut.fifomem.raddr[3:0]
+async_fifo_unit_test.dut.fifomem.rdata[31:0]
+@200
+-RD PTR EMPTY
+@28
+async_fifo_unit_test.dut.rptr_empty.rclk[0]
+async_fifo_unit_test.dut.rptr_empty.rrst_n[0]
+async_fifo_unit_test.dut.rptr_empty.rinc[0]
+async_fifo_unit_test.dut.rptr_empty.rempty[0]
+@22
+async_fifo_unit_test.dut.rptr_empty.raddr[3:0]
+async_fifo_unit_test.dut.rptr_empty.rbin[4:0]
+async_fifo_unit_test.dut.rptr_empty.rbinnext[4:0]
+@28
+async_fifo_unit_test.dut.rptr_empty.rempty_val[0]
+@22
+async_fifo_unit_test.dut.rptr_empty.rgraynext[4:0]
+async_fifo_unit_test.dut.rptr_empty.rptr[4:0]
+@23
+async_fifo_unit_test.dut.rptr_empty.rq2_wptr[4:0]
 [pattern_trace] 1
 [pattern_trace] 0

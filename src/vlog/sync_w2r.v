@@ -22,10 +22,10 @@ module sync_w2r
     #(
     parameter ADDRSIZE = 4
     )(
-    input                   rclk,
-    input                   rrst_n,
-    output reg [ADDRSIZE:0] rq2_wptr,
-    input      [ADDRSIZE:0] wptr
+    input  wire              rclk,
+    input  wire              rrst_n,
+    output reg  [ADDRSIZE:0] rq2_wptr,
+    input  wire [ADDRSIZE:0] wptr
     );
     
     reg [ADDRSIZE:0] rq1_wptr;
@@ -36,9 +36,9 @@ module sync_w2r
             {rq2_wptr,rq1_wptr} <= 0;
         else
             {rq2_wptr,rq1_wptr} <= {rq1_wptr,wptr};
+
     end
 
 endmodule
 
 `resetall
-

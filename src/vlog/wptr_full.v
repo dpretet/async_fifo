@@ -17,19 +17,19 @@
 `timescale 1 ns / 1 ps
 `default_nettype none
 
-
 module wptr_full
 
     #(
     parameter ADDRSIZE = 4
     )(
-    input winc,
-    input wclk,
-    input  wrst_n,
-    input      [ADDRSIZE  :0] wq2_rptr,
-    output reg                wfull,
-    output     [ADDRSIZE-1:0] waddr,
-    output reg [ADDRSIZE  :0] wptr
+    input  wire                wclk,
+    input  wire                wrst_n,
+    input  wire                winc,
+    input  wire [ADDRSIZE  :0] wq2_rptr,
+    output reg                 wfull,
+    output reg                 awfull,
+    output wire [ADDRSIZE-1:0] waddr,
+    output reg  [ADDRSIZE  :0] wptr
     );
 
     reg  [ADDRSIZE:0] wbin;
@@ -37,11 +37,14 @@ module wptr_full
     wire wfull_val;
 
     // GRAYSTYLE2 pointer
-    always @(posedge wclk or negedge wrst_n)
+    always @(posedge wclk or negedge wrst_n) begin
+
         if (!wrst_n) 
             {wbin, wptr} <= 0;
         else         
             {wbin, wptr} <= {wbinnext, wgraynext};
+
+    end
     
     // Memory write-address pointer (okay to use binary to address memory)
     assign waddr = wbin[ADDRSIZE-1:0];
@@ -55,13 +58,20 @@ module wptr_full
     // (wgnext[ADDRSIZE-2:0]==wq2_rptr[ADDRSIZE-2:0])); 
     //------------------------------------------------------------------
     
-     assign wfull_val = (wgraynext=={~wq2_rptr[ADDRSIZE:ADDRSIZE-1],wq2_rptr[ADDRSIZE-2:0]});
+     assign wfull_val = (wgraynext == {~wq2_rptr[ADDRSIZE:ADDRSIZE-1],wq2_rptr[ADDRSIZE-2:0]});
 
-     always @(posedge wclk or negedge wrst_n)
-       if (!wrst_n) 
+     always @(posedge wclk or negedge wrst_n) begin
+
+        if (!wrst_n) begin
+            awfull <= 1'b0;
             wfull  <= 1'b0;
-        else
+        end
+        else begin
+            awfull <= 1'b0;
             wfull  <= wfull_val;
+        end
+
+    end
 
 endmodule
 

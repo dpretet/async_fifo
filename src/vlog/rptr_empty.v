@@ -27,6 +27,7 @@ module rptr_empty
     input  wire                rinc,
     input  wire [ADDRSIZE  :0] rq2_wptr,
     output reg                 rempty,
+    output reg                 arempty,
     output wire [ADDRSIZE-1:0] raddr,
     output reg  [ADDRSIZE  :0] rptr
     );
@@ -38,12 +39,13 @@ module rptr_empty
     //-------------------
     // GRAYSTYLE2 pointer
     //-------------------
-    
     always @(posedge rclk or negedge rrst_n) begin
+
         if (!rrst_n) 
             {rbin, rptr} <= 0;
         else         
             {rbin, rptr} <= {rbinnext, rgraynext};
+
     end
     
     // Memory read-address pointer (okay to use binary to address memory)
@@ -56,15 +58,19 @@ module rptr_empty
     //--------------------------------------------------------------- 
     assign rempty_val = (rgraynext == rq2_wptr);
     
-    always @(posedge rclk or negedge rrst_n) begin
-        if (!rrst_n) 
+    always @ (posedge rclk or negedge rrst_n) begin
+
+        if (!rrst_n) begin
+            arempty <= 1'b0;
             rempty <= 1'b1;
-        else
+        end
+        else begin
+            arempty <= 1'b0;
             rempty <= rempty_val;
+        end
+
     end
 
 endmodule
 
 `resetall
-
-

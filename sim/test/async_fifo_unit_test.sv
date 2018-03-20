@@ -15,11 +15,13 @@ module async_fifo_unit_test;
     reg              winc;
     reg  [DSIZE-1:0] wdata;
     wire             wfull;
+    wire             awfull;
     reg              rclk;
     reg              rrst_n;
     reg              rinc;
     wire [DSIZE-1:0] rdata;
     wire             rempty;
+    wire             arempty;
 
     async_fifo 
     #(
@@ -33,11 +35,13 @@ module async_fifo_unit_test;
     winc,
     wdata,
     wfull,
+    awfull,
     rclk,
     rrst_n,
     rinc,
     rdata,
-    rempty
+    rempty,
+    arempty
     );
 
     // An example to create a clock
@@ -47,10 +51,13 @@ module async_fifo_unit_test;
     always #3 rclk <= ~rclk;
 
     // An example to dump data for visualization
-    initial $dumpvars(0,async_fifo_unit_test);
+    initial begin
+        $dumpvars(0, async_fifo_unit_test);
+    end
 
     task setup();
     begin
+
         wrst_n = 1'b0;
         winc = 1'b0;
         wdata = 0;
@@ -61,6 +68,7 @@ module async_fifo_unit_test;
         rrst_n = 1;
         #200;
         @(posedge wclk);
+
     end
     endtask
 
@@ -74,7 +82,7 @@ module async_fifo_unit_test;
 
     `UNIT_TEST(IDLE)
         
-        `INFO("Start IDLE test");
+        `INFO("Test: IDLE");
         `FAIL_IF(wfull);
         `FAIL_IF(!rempty);
     
@@ -82,65 +90,104 @@ module async_fifo_unit_test;
 
     `UNIT_TEST(SIMPLE_WRITE_AND_READ)
 
-        `INFO("Simple write then read");
+        `INFO("Test: Simple write then read");
         
         @(posedge wclk)
+
         winc = 1;
         wdata = 32'hA;
+
         @(posedge wclk)
+
         winc = 0;
+
         @(posedge rclk)
-        wait (rempty == 0);
+
+        wait (rempty == 1'b0);
+
         `FAIL_IF_NOT_EQUAL(rdata, 32'hA);
 
     `UNIT_TEST_END
 
     `UNIT_TEST(MULTIPLE_WRITE_AND_READ)
 
-        `INFO("Multiple write then read");
+        `INFO("Test: Multiple write then read");
         
-        for (i=0; i<20; i = i+1) begin
-            @(posedge wclk)
+        for (i=0; i<10; i=i+1) begin
+            @(negedge wclk);
             winc = 1;
             wdata = i;
-            @(posedge wclk)
-            winc = 0;
-            @(posedge rclk)
-            wait (rempty == 0);
+            // $display("DEBUG:   [%g]: %x", $time, i);
+        end
+        @(negedge wclk);
+        winc = 0;
+        
+        #100;
+
+        @(posedge rclk);
+
+        rinc = 1;
+        for (i=0; i<10; i=i+1) begin
+            @(posedge rclk);
             `FAIL_IF_NOT_EQUAL(rdata, i);
+            // $display("DEBUG:   [%g]: %x", $time, rdata);
         end
 
     `UNIT_TEST_END
 
     `UNIT_TEST(TEST_FULL_FLAG)
 
-        `INFO("Test full flag test");
+        `INFO("Test: full flag test");
         
-        for (i=0; i<2**ASIZE; i = i+1) begin
-            @(posedge wclk)
-            winc = 1;
+        winc = 1;
+
+        for (i=0; i<2**ASIZE; i=i+1) begin
+            @(negedge wclk)
             wdata = i;
         end
-        @(posedge wclk)
-        @(posedge wclk)
+
+        @(negedge wclk);
+        winc = 0;
+
         @(posedge wclk)
         `FAIL_IF_NOT_EQUAL(wfull, 1);
+
         #50;
     
     `UNIT_TEST_END
 
     `UNIT_TEST(TEST_EMPTY_FLAG)
         
-        `INFO("Test empty flag test");
+        `INFO("Test: empty flag test");
         
-        for (i=0; i<2**ASIZE; i = i+1) begin
+        for (i=0; i<2**ASIZE; i=i+1) begin
             @(posedge wclk)
             winc = 1;
             wdata = i;
         end
-        `FAIL_IF_NOT_EQUAL(rempty, 1);
+        `FAIL_IF_NOT_EQUAL(rempty, 0);
         #50;
 
+    `UNIT_TEST_END
+
+    `UNIT_TEST(TEST_SIMPLE_ALMOST_FULL_FLAG)
+
+        `INFO("Test: Almost full flag simple test");
+        
+        winc = 1;
+        for (i=0; i<2**ASIZE; i=i+1) begin
+            @(negedge wclk)
+            wdata = i;
+        end
+
+        @(negedge wclk);
+        winc = 0;
+
+        @(posedge wclk)
+        `FAIL_IF_NOT_EQUAL(wfull, 1);
+
+        #50;
+    
     `UNIT_TEST_END
 
     `UNIT_TESTS_END

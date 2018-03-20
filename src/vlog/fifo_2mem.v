@@ -23,12 +23,12 @@ module fifomem
     parameter  DATASIZE = 8,    // Memory data word width
     parameter  ADDRSIZE = 4     // Number of mem address bits
     ) (
-    input  wire [DATASIZE-1:0] wdata,
-    input  wire [ADDRSIZE-1:0] waddr,
-    input  wire [ADDRSIZE-1:0] raddr,
-    input  wire                wclken,
-    input  wire                wfull,
     input  wire                wclk,
+    input  wire                wclken,
+    input  wire [ADDRSIZE-1:0] waddr,
+    input  wire [DATASIZE-1:0] wdata,
+    input  wire                wfull,
+    input  wire [ADDRSIZE-1:0] raddr,
     output wire [DATASIZE-1:0] rdata
     );
     
@@ -46,5 +46,3 @@ module fifomem
 endmodule
 
 `resetall
-
-
