@@ -74,7 +74,9 @@ module async_fifo_unit_test;
 
     task teardown();
     begin
-        // teardown() runs when a test ends
+
+        #200;
+
     end
     endtask
 
@@ -152,21 +154,41 @@ module async_fifo_unit_test;
         @(posedge wclk)
         `FAIL_IF_NOT_EQUAL(wfull, 1);
 
-        #50;
-    
     `UNIT_TEST_END
 
     `UNIT_TEST(TEST_EMPTY_FLAG)
         
         `INFO("Test: empty flag test");
+
+        `FAIL_IF_NOT_EQUAL(rempty, 1);
         
         for (i=0; i<2**ASIZE; i=i+1) begin
             @(posedge wclk)
             winc = 1;
             wdata = i;
         end
+
         `FAIL_IF_NOT_EQUAL(rempty, 0);
-        #50;
+
+    `UNIT_TEST_END
+
+    `UNIT_TEST(TEST_SIMPLE_ALMOST_EMPTY_FLAG)
+        
+        `INFO("Test: almost empty flag simple test");
+        
+        `FAIL_IF_NOT_EQUAL(arempty, 0);
+
+        for (i=0; i<2; i=i+1) begin
+            @(posedge wclk)
+            winc = 1;
+            wdata = i;
+            @(negedge wclk)
+            winc = 1;
+        end
+        @(posedge wclk);
+        @(posedge wclk);
+
+        `FAIL_IF_NOT_EQUAL(arempty, 1);
 
     `UNIT_TEST_END
 
@@ -176,8 +198,10 @@ module async_fifo_unit_test;
         
         winc = 1;
         for (i=0; i<2**ASIZE; i=i+1) begin
+
             @(negedge wclk)
             wdata = i;
+
         end
 
         @(negedge wclk);
@@ -185,11 +209,28 @@ module async_fifo_unit_test;
 
         @(posedge wclk)
         `FAIL_IF_NOT_EQUAL(wfull, 1);
-
-        #50;
     
     `UNIT_TEST_END
 
+    `UNIT_TEST(TEST_CONSECUTIVE_ALMOST_EMPTY_FULL)
+
+        `INFO("Test: Consecutive empty/full flags test");
+        
+        winc = 1;
+        for (i=0; i<2**ASIZE; i=i+1) begin
+
+            @(negedge wclk)
+            wdata = i;
+
+        end
+
+        @(negedge wclk);
+        winc = 0;
+
+        @(posedge wclk)
+        `FAIL_IF_NOT_EQUAL(wfull, 1);
+    
+    `UNIT_TEST_END
     `UNIT_TESTS_END
 
 endmodule

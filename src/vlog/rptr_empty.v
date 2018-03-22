@@ -33,8 +33,8 @@ module rptr_empty
     );
     
     reg  [ADDRSIZE:0] rbin;
-    wire [ADDRSIZE:0] rgraynext, rbinnext;
-    wire rempty_val;
+    wire [ADDRSIZE:0] rgraynext, rbinnext, rgraynextm1;
+    wire              arempty_val, rempty_val;
 
     //-------------------
     // GRAYSTYLE2 pointer
@@ -51,12 +51,14 @@ module rptr_empty
     // Memory read-address pointer (okay to use binary to address memory)
     assign raddr     = rbin[ADDRSIZE-1:0];
     assign rbinnext  = rbin + (rinc & ~rempty);
-    assign rgraynext = (rbinnext>>1) ^ rbinnext;
+    assign rgraynext = (rbinnext >> 1) ^ rbinnext;
+    assign rgraynextm1 = ((rbinnext + 1'b1) >> 1) ^ (rbinnext + 1'b1);
     
     //--------------------------------------------------------------- 
     // FIFO empty when the next rptr == synchronized wptr or on reset 
     //--------------------------------------------------------------- 
     assign rempty_val = (rgraynext == rq2_wptr);
+    assign arempty_val = (rgraynextm1 == rq2_wptr);
     
     always @ (posedge rclk or negedge rrst_n) begin
 
@@ -65,7 +67,7 @@ module rptr_empty
             rempty <= 1'b1;
         end
         else begin
-            arempty <= 1'b0;
+            arempty <= arempty_val;
             rempty <= rempty_val;
         end
 

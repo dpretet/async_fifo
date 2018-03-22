@@ -62,6 +62,7 @@ module async_fifo
     wptr_full
     #(ASIZE)
     wptr_full (
+    .awfull   (awfull),
     .wfull    (wfull),
     .waddr    (waddr),
     .wptr     (wptr),
@@ -88,6 +89,7 @@ module async_fifo
     rptr_empty
     #(ASIZE)
     rptr_empty (
+    .arempty  (arempty),
     .rempty   (rempty),
     .raddr    (raddr),
     .rptr     (rptr),
