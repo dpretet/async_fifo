@@ -21,7 +21,8 @@ module async_fifo
 
     #(
     parameter DSIZE = 8,
-    parameter ASIZE = 4
+    parameter ASIZE = 4,
+    parameter FALLTHROUGH = "TRUE" // First word fall-through
     )(
     input  wire             wclk,
     input  wire             wrst_n,
@@ -78,8 +79,10 @@ module async_fifo
 
     // The DC-RAM 
     fifomem
-    #(DSIZE, ASIZE)
+    #(DSIZE, ASIZE, FALLTHROUGH)
     fifomem (
+    .rclken (rinc),
+    .rclk   (rclk),
     .rdata  (rdata),
     .wdata  (wdata),
     .waddr  (waddr),

@@ -21,15 +21,18 @@ module fifomem
     
     #(
     parameter  DATASIZE = 8,    // Memory data word width
-    parameter  ADDRSIZE = 4     // Number of mem address bits
+    parameter  ADDRSIZE = 4,    // Number of mem address bits
+    parameter  FALLTHROUGH = "TRUE" // First word fall-through
     ) (
-    input  wire                wclk,
-    input  wire                wclken,
-    input  wire [ADDRSIZE-1:0] waddr,
-    input  wire [DATASIZE-1:0] wdata,
-    input  wire                wfull,
-    input  wire [ADDRSIZE-1:0] raddr,
-    output wire [DATASIZE-1:0] rdata
+    input wire                wclk,
+    input wire                wclken,
+    input wire [ADDRSIZE-1:0] waddr,
+    input wire [DATASIZE-1:0] wdata,
+    input wire                wfull,
+    input                     rclk,
+    input                     rclken,
+    input wire [ADDRSIZE-1:0] raddr,
+    output reg [DATASIZE-1:0] rdata
     );
     
     localparam DEPTH = 1<<ADDRSIZE;
@@ -40,8 +43,21 @@ module fifomem
         if (wclken && !wfull) 
             mem[waddr] <= wdata;
     end
-    
-    assign rdata = mem[raddr];
+
+  generate
+    if (FALLTHROUGH == "TRUE")
+      begin : fallthrough
+        always_comb
+          rdata = mem[raddr];
+      end
+    else
+      begin : registered_read
+        always @(posedge rclk) begin
+          if (rclken)
+            rdata <= mem[raddr];
+        end
+      end
+  endgenerate
 
 endmodule
 
