@@ -47,7 +47,7 @@ module fifomem
   generate
     if (FALLTHROUGH == "TRUE")
       begin : fallthrough
-        always_comb
+        always @*
           rdata = mem[raddr];
       end
     else
