@@ -21,7 +21,8 @@ module async_fifo
 
     #(
     parameter DSIZE = 8,
-    parameter ASIZE = 4
+    parameter ASIZE = 4,
+    parameter FALLTHROUGH = "TRUE" // First word fall-through
     )(
     input  wire             wclk,
     input  wire             wrst_n,
@@ -42,7 +43,9 @@ module async_fifo
     
     // The module synchronizing the read point
     // from read to write domain
-    sync_r2w sync_r2w (
+    sync_r2w
+    #(ASIZE)
+    sync_r2w (
     .wq2_rptr (wq2_rptr),
     .rptr     (rptr),
     .wclk     (wclk),
@@ -51,7 +54,9 @@ module async_fifo
 
     // The module synchronizing the write point
     // from write to read domain
-    sync_w2r sync_w2r (
+    sync_w2r
+    #(ASIZE)
+    sync_w2r (
     .rq2_wptr (rq2_wptr),
     .wptr     (wptr),
     .rclk     (rclk),
@@ -74,8 +79,10 @@ module async_fifo
 
     // The DC-RAM 
     fifomem
-    #(DSIZE, ASIZE)
+    #(DSIZE, ASIZE, FALLTHROUGH)
     fifomem (
+    .rclken (rinc),
+    .rclk   (rclk),
     .rdata  (rdata),
     .wdata  (wdata),
     .waddr  (waddr),

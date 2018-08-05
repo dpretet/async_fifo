@@ -20,15 +20,15 @@
 module sync_r2w
 
     #(
-    parameter ADDRSIZE = 4
+    parameter ASIZE = 4
     )(
     input  wire              wclk,
     input  wire              wrst_n,
-    input  wire [ADDRSIZE:0] rptr,
-    output reg  [ADDRSIZE:0] wq2_rptr
+    input  wire [ASIZE:0] rptr,
+    output reg  [ASIZE:0] wq2_rptr
     );
 
-    reg [ADDRSIZE:0] wq1_rptr;
+    reg [ASIZE:0] wq1_rptr;
 
     always @(posedge wclk or negedge wrst_n) begin
 
