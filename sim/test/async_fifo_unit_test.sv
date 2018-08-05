@@ -178,16 +178,13 @@ module async_fifo_unit_test;
         
         `FAIL_IF_NOT_EQUAL(arempty, 0);
 
-        for (i=0; i<2; i=i+1) begin
-            @(posedge wclk)
-            winc = 1;
-            wdata = i;
-            @(negedge wclk)
-            winc = 1;
-        end
+        @(posedge wclk)
+        winc = 1;
+        wdata = i;
         @(posedge wclk);
-        @(posedge wclk);
+        winc = 0;
 
+        #100;
         `FAIL_IF_NOT_EQUAL(arempty, 1);
 
     `UNIT_TEST_END

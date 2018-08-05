@@ -1,21 +1,21 @@
 [*]
-[*] GTKWave Analyzer v3.3.85 (w)1999-2017 BSI
-[*] Wed Oct  4 21:08:19 2017
+[*] GTKWave Analyzer v3.3.87 (w)1999-2017 BSI
+[*] Sun Aug  5 12:00:52 2018
 [*]
-[dumpfile] "/Users/damien/dev/verilog/async_fifo/sim/test/dump.lxt"
-[dumpfile_mtime] "Wed Oct  4 20:53:16 2017"
-[dumpfile_size] 3687
-[savefile] "/Users/damien/dev/verilog/async_fifo/sim/test/wave.gtkw"
-[timestart] 1089250
-[size] 1920 1056
-[pos] -1 0
-*-13.241215 1077000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[dumpfile] "/Users/damien/dev/systemVerilog/async_fifo/sim/test/dump.lxt"
+[dumpfile_mtime] "Sun Aug  5 11:55:44 2018"
+[dumpfile_size] 6440
+[savefile] "/Users/damien/dev/systemVerilog/async_fifo/sim/test/wave.gtkw"
+[timestart] 3019200
+[size] 1280 730
+[pos] 0 0
+*-16.372753 3190100 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] async_fifo_unit_test.
 [treeopen] async_fifo_unit_test.dut.
 [sst_width] 196
 [signals_width] 332
 [sst_expanded] 1
-[sst_vpaned_height] 575
+[sst_vpaned_height] 492
 @200
 -TB
 @22
@@ -79,18 +79,23 @@ async_fifo_unit_test.dut.fifomem.rdata[31:0]
 @28
 async_fifo_unit_test.dut.rptr_empty.rclk[0]
 async_fifo_unit_test.dut.rptr_empty.rrst_n[0]
-async_fifo_unit_test.dut.rptr_empty.rinc[0]
-async_fifo_unit_test.dut.rptr_empty.rempty[0]
+async_fifo_unit_test.dut.rptr_empty.arempty[0]
+async_fifo_unit_test.dut.rptr_empty.arempty_val[0]
 @22
 async_fifo_unit_test.dut.rptr_empty.raddr[3:0]
 async_fifo_unit_test.dut.rptr_empty.rbin[4:0]
 async_fifo_unit_test.dut.rptr_empty.rbinnext[4:0]
 @28
+async_fifo_unit_test.dut.rptr_empty.rclk[0]
+async_fifo_unit_test.dut.rptr_empty.rempty[0]
 async_fifo_unit_test.dut.rptr_empty.rempty_val[0]
 @22
 async_fifo_unit_test.dut.rptr_empty.rgraynext[4:0]
+async_fifo_unit_test.dut.rptr_empty.rgraynextm1[4:0]
+@28
+async_fifo_unit_test.dut.rptr_empty.rinc[0]
+@22
 async_fifo_unit_test.dut.rptr_empty.rptr[4:0]
-@23
 async_fifo_unit_test.dut.rptr_empty.rq2_wptr[4:0]
 [pattern_trace] 1
 [pattern_trace] 0
