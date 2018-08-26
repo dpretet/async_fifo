@@ -23,7 +23,7 @@ module async_bidir_fifo
   #(
     parameter DSIZE         = 8,
     parameter ASIZE         = 4,
-    parameter FALLTHROUGH   = "TRUE", // First word fall-through
+    parameter FALLTHROUGH   = "TRUE" // First word fall-through
     ) (
        input wire              a_clk,
        input wire              a_rst_n,
