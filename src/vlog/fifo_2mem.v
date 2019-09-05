@@ -29,8 +29,8 @@ module fifomem
     input wire [ADDRSIZE-1:0] waddr,
     input wire [DATASIZE-1:0] wdata,
     input wire                wfull,
-    input                     rclk,
-    input                     rclken,
+    input wire                rclk,
+    input wire                rclken,
     input wire [ADDRSIZE-1:0] raddr,
     output reg [DATASIZE-1:0] rdata
     );
