@@ -51,9 +51,13 @@ module async_fifo_unit_test;
     always #3 rclk <= ~rclk;
 
     // An example to dump data for visualization
+`ifdef USE_VLOG_TB_UTILS
+   vlog_tb_utils vtu();
+`else
     initial begin
         $dumpvars(0, async_fifo_unit_test);
     end
+`endif
 
     task setup();
     begin

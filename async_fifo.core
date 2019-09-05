@@ -1,0 +1,44 @@
+CAPI=2:
+
+name : ::async_fifo:1.0.0-r1
+
+filesets:
+  rtl:
+    files:
+      - src/vlog/fifomem_dp.v
+      - src/vlog/sync_r2w.v
+      - src/vlog/async_bidir_fifo.v
+      - src/vlog/rptr_empty.v
+      - src/vlog/sync_w2r.v
+      - src/vlog/wptr_full.v
+      - src/vlog/fifo_2mem.v
+      - src/vlog/async_bidir_ramif_fifo.v
+      - src/vlog/async_fifo.v
+      - src/vlog/sync_ptr.v
+    file_type : verilogSource
+  tb:
+    files:
+      - sim/test/async_fifo_unit_test.sv : {file_type : systemVerilogSource}
+    depend : [svut, vlog_tb_utils]
+
+targets:
+  default: {filesets : [rtl]}
+
+  sim:
+    default_tool : icarus
+    filesets: [rtl, tb]
+    parameters: [USE_VLOG_TB_UTILS=true]
+    tools:
+      icarus:
+        iverilog_options: [-g2012]
+      modelsim:
+        vlog_options: [-timescale=1ns/1ps]
+      xsim:
+        xelab_options: [--timescale, 1ns/1ns]
+    toplevel : async_fifo_unit_test
+
+parameters:
+  USE_VLOG_TB_UTILS:
+    datatype: bool
+    description: Use vlog_tb_utils for VCD and timeout handling
+    paramtype: vlogdefine
