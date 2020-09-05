@@ -1,6 +1,6 @@
 CAPI=2:
 
-name : ::async_fifo:1.0.0-r1
+name : ::async_fifo:1.1.0-r1
 
 filesets:
   rtl:
