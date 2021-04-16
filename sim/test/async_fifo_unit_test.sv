@@ -23,12 +23,12 @@ module async_fifo_unit_test;
     wire             rempty;
     wire             arempty;
 
-    async_fifo 
+    async_fifo
     #(
     DSIZE,
     ASIZE
     )
-    dut 
+    dut
     (
     wclk,
     wrst_n,
@@ -59,7 +59,7 @@ module async_fifo_unit_test;
     end
 `endif
 
-    task setup();
+    task setup(msg="Setup testcase");
     begin
 
         wrst_n = 1'b0;
@@ -70,34 +70,29 @@ module async_fifo_unit_test;
         #100;
         wrst_n = 1;
         rrst_n = 1;
-        #200;
+        #50;
         @(posedge wclk);
 
     end
     endtask
 
-    task teardown();
+    task teardown(msg="Tearing down");
     begin
-
-        #200;
-
+        #50;
     end
     endtask
 
-    `UNIT_TESTS
+    `TEST_SUITE("ASYNCFIFO")
 
-    `UNIT_TEST(IDLE)
-        
-        `INFO("Test: IDLE");
+    `UNIT_TEST("IDLE")
+
         `FAIL_IF(wfull);
         `FAIL_IF(!rempty);
-    
+
     `UNIT_TEST_END
 
-    `UNIT_TEST(SIMPLE_WRITE_AND_READ)
+    `UNIT_TEST("SINGLE_WRITE_THEN_READ")
 
-        `INFO("Test: Simple write then read");
-        
         @(posedge wclk)
 
         winc = 1;
@@ -111,23 +106,24 @@ module async_fifo_unit_test;
 
         wait (rempty == 1'b0);
 
+        rinc = 1;
+        @(negedge rclk)
+
         `FAIL_IF_NOT_EQUAL(rdata, 32'hA);
 
     `UNIT_TEST_END
 
-    `UNIT_TEST(MULTIPLE_WRITE_AND_READ)
+    `UNIT_TEST("MULTIPLE_WRITE_AND_READ")
 
-        `INFO("Test: Multiple write then read");
-        
         for (i=0; i<10; i=i+1) begin
             @(negedge wclk);
             winc = 1;
             wdata = i;
-            // $display("DEBUG:   [%g]: %x", $time, i);
+            $display("DEBUG:   [%g]: %x", $time, i);
         end
         @(negedge wclk);
         winc = 0;
-        
+
         #100;
 
         @(posedge rclk);
@@ -136,15 +132,13 @@ module async_fifo_unit_test;
         for (i=0; i<10; i=i+1) begin
             @(posedge rclk);
             `FAIL_IF_NOT_EQUAL(rdata, i);
-            // $display("DEBUG:   [%g]: %x", $time, rdata);
+            $display("DEBUG:   [%g]: %x", $time, rdata);
         end
 
     `UNIT_TEST_END
 
-    `UNIT_TEST(TEST_FULL_FLAG)
+    `UNIT_TEST("TEST_FULL_FLAG")
 
-        `INFO("Test: full flag test");
-        
         winc = 1;
 
         for (i=0; i<2**ASIZE; i=i+1) begin
@@ -160,12 +154,10 @@ module async_fifo_unit_test;
 
     `UNIT_TEST_END
 
-    `UNIT_TEST(TEST_EMPTY_FLAG)
-        
-        `INFO("Test: empty flag test");
+    `UNIT_TEST("TEST_EMPTY_FLAG")
 
         `FAIL_IF_NOT_EQUAL(rempty, 1);
-        
+
         for (i=0; i<2**ASIZE; i=i+1) begin
             @(posedge wclk)
             winc = 1;
@@ -176,10 +168,8 @@ module async_fifo_unit_test;
 
     `UNIT_TEST_END
 
-    `UNIT_TEST(TEST_SIMPLE_ALMOST_EMPTY_FLAG)
-        
-        `INFO("Test: almost empty flag simple test");
-        
+    `UNIT_TEST("TEST_SIMPLE_ALMOST_EMPTY_FLAG")
+
         `FAIL_IF_NOT_EQUAL(arempty, 0);
 
         @(posedge wclk)
@@ -193,10 +183,8 @@ module async_fifo_unit_test;
 
     `UNIT_TEST_END
 
-    `UNIT_TEST(TEST_SIMPLE_ALMOST_FULL_FLAG)
+    `UNIT_TEST("TEST_SIMPLE_ALMOST_FULL_FLAG")
 
-        `INFO("Test: Almost full flag simple test");
-        
         winc = 1;
         for (i=0; i<2**ASIZE; i=i+1) begin
 
@@ -210,13 +198,11 @@ module async_fifo_unit_test;
 
         @(posedge wclk)
         `FAIL_IF_NOT_EQUAL(wfull, 1);
-    
+
     `UNIT_TEST_END
 
-    `UNIT_TEST(TEST_CONSECUTIVE_ALMOST_EMPTY_FULL)
+    `UNIT_TEST("TEST_CONSECUTIVE_ALMOST_EMPTY_FULL")
 
-        `INFO("Test: Consecutive empty/full flags test");
-        
         winc = 1;
         for (i=0; i<2**ASIZE; i=i+1) begin
 
@@ -230,9 +216,9 @@ module async_fifo_unit_test;
 
         @(posedge wclk)
         `FAIL_IF_NOT_EQUAL(wfull, 1);
-    
+
     `UNIT_TEST_END
-    `UNIT_TESTS_END
+    `TEST_SUITE_END
 
 endmodule
 

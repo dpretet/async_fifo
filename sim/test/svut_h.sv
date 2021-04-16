@@ -1,4 +1,4 @@
-/// Copyright 2020 The SVUT Authors
+/// Copyright 2021 The SVUT Authors
 ///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to
@@ -83,6 +83,8 @@
 /// SVUT_SETUP is the code portion initializing all the needed
 /// variables. To call once before or after the module instance
 `define SVUT_SETUP \
+    integer svut_test_number = 0; \
+    string testnum; \
     integer svut_status = 0; \
     integer svut_warning = 0; \
     integer svut_critical = 0; \
@@ -99,11 +101,12 @@
 `define LAST_STATUS svut_status
 
 /// This function is shared between assertions to format messages
-function string create_msg(input string assertion, message);
-    if (message != "")
+function automatic string create_msg(input string assertion, message);
+    if (message != "") begin
         create_msg = {message, " (", assertion, ")"};
-    else
+    end else begin
         create_msg = assertion;
+    end
 endfunction
 
 /// Follows a set of macros to check an expression
@@ -170,7 +173,8 @@ endfunction
 `define UNIT_TEST(name="") \
     begin \
         $display("");\
-        svut_msg = {"Starting test << ", name, " >>"}; \
+        $sformat(testnum, "%0d", svut_test_number); \
+        svut_msg = {"Starting test << ", "Test ", testnum, ": ", name, " >>"}; \
         `INFO(svut_msg); \
         setup(); \
         svut_test_name = name; \
@@ -180,6 +184,7 @@ endfunction
 /// This header must be placed to close a test
 `define UNIT_TEST_END \
         teardown(); \
+        svut_test_number = svut_test_number + 1; \
         if (svut_error == 0) begin \
             svut_nb_test_success = svut_nb_test_success + 1; \
             `SUCCESS("Test successful"); \
