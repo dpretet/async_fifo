@@ -42,3 +42,9 @@ parameters:
     datatype: bool
     description: Use vlog_tb_utils for VCD and timeout handling
     paramtype: vlogdefine
+
+provider:
+  name : github
+  user : dpretet
+  repo : async_fifo
+  version : v1.0.0
