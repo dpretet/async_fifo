@@ -1,0 +1,22 @@
+name: Async_FIFO
+on: [push]
+jobs:
+  Lint:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: brew install verilator
+      - run: ./flow.sh lint
+  Simulation:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: brew install verilator
+      - run: brew install icarus-verilog
+      - run: ./flow.sh sim
+  Synthesis:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: brew install yosys
+      - run: ./flow.sh syn

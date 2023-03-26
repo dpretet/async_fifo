@@ -3,3 +3,6 @@
 *.lxt
 .DS_Store
 tags
+lint.log script src
+async_fifo_syn.v
+lint.log

@@ -1,0 +1,26 @@
+# read design modules
+read -sv2012 ../rtl/async_fifo.v
+read -sv2012 ../rtl/fifomem.v
+read -sv2012 ../rtl/rptr_empty.v
+read -sv2012 ../rtl/sync_r2w.v
+read -sv2012 ../rtl/sync_w2r.v
+read -sv2012 ../rtl/wptr_full.v
+# synthsize the core
+synth -top async_fifo
+
+# convert design to (logical) gate-level netlists
+# +/adff2dff.v convert async reset to sync reset, used to mapp FFD correctly
+techmap +/adff2dff.v; opt
+# dffunmap
+
+# map internal register types to the ones from the cell library
+dfflibmap -liberty cmos.lib
+
+# use ABC to map remaining logic to cells from the cell library
+abc -liberty cmos.lib
+
+# cleanup
+clean
+
+# write synthesized design
+write_verilog async_fifo_syn.v

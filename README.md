@@ -1,5 +1,6 @@
 # Asynchronous dual clock FIFO
 
+![CI](https://github.com/dpretet/async_fifo/actions/workflows/ci.yaml/badge.svg?branch=master)
 [![GitHub issues](https://img.shields.io/github/issues/dpretet/async_fifo)](https://github.com/dpretet/async_fifo/issues)
 [![GitHub forks](https://img.shields.io/github/forks/dpretet/async_fifo)](https://github.com/dpretet/async_fifo/network)
 [![GitHub stars](https://img.shields.io/github/stars/dpretet/async_fifo)](https://github.com/dpretet/async_fifo/stargazers)
@@ -18,10 +19,24 @@ Design](http://www.sunburst-design.com/papers/CummingsSNUG2002SJ_FIFO1.pdf).
 
 The simulation testcases available use [Icarus Verilog](http://iverilog.icarus.com) and [SVUT](https://github.com/dpretet/svut) tool to run the tests.
 
-# Documentation
+The FIFO is fully functional and used in many successful project
 
-* [specification](doc/specification.rst)
-* [testplan](doc/testplan.rst)
+# Usage
+
+RTL sources are present in RTL folder under three flavors:
+- `rtl/async_fifo.v`: a basic asynchronous dual-clock FIFO
+- `rtl/async_bidir_fifo.v`: two instance of the first one into a single top level for full-duplex channel
+- `rtl/async_bidir_ramif_fifo.v`: same than previous but with external RAM
+
+The three FIFOs have a list file to get the associated fileset.
+
+The testbench in `sim/` provides an example about the instance and the configuration.
+
+All three top levels have the same parameters:
+- `DSIZE`: the size in bits of the datapath
+- `ASIZE`: the size in bits of the internal RAM address bus. This implies the FIFO can be configured only with power of 2 depth
+- `FALLTHROUGH`: allow to reduce the inner latency and propagate faster the data through the FIFO
+
 
 # License
 
