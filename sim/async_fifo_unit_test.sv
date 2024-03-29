@@ -9,6 +9,8 @@ module async_fifo_unit_test;
 
     parameter DSIZE = 32;
     parameter ASIZE = 4;
+    parameter AREMPTYSIZE = 1;
+    parameter AWFULLSIZE = 1;
 
     reg              wclk;
     reg              wrst_n;
@@ -26,7 +28,9 @@ module async_fifo_unit_test;
     async_fifo
 	#(
 		DSIZE,
-		ASIZE
+		ASIZE,
+        AWFULLSIZE,
+        AREMPTYSIZE
     )
     dut
     (

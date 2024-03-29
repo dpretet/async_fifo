@@ -9,6 +9,8 @@ module async_fifo
     #(
         parameter DSIZE = 8,
         parameter ASIZE = 4,
+        parameter AWFULLSIZE = 1,
+        parameter AREMPTYSIZE = 1,
         parameter FALLTHROUGH = "TRUE" // First word fall-through without latency
     )(
         input  wire             wclk,
@@ -52,7 +54,7 @@ module async_fifo
 
     // The module handling the write requests
     wptr_full
-    #(ASIZE)
+    #(ASIZE,AWFULLSIZE)
     wptr_full (
     .awfull   (awfull),
     .wfull    (wfull),
@@ -81,7 +83,7 @@ module async_fifo
 
     // The module handling read requests
     rptr_empty
-    #(ASIZE)
+    #(ASIZE,AREMPTYSIZE)
     rptr_empty (
     .arempty  (arempty),
     .rempty   (rempty),

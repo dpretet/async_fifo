@@ -7,7 +7,8 @@
 module wptr_full
 
 	#(
-		parameter ADDRSIZE = 4
+		parameter ADDRSIZE = 4,
+        parameter AWFULLSIZE = 1
 	)(
 		input  wire                wclk,
 		input  wire                wrst_n,
@@ -37,7 +38,7 @@ module wptr_full
     assign waddr = wbin[ADDRSIZE-1:0];
     assign wbinnext  = wbin + (winc & ~wfull);
     assign wgraynext = (wbinnext >> 1) ^ wbinnext;
-    assign wgraynextp1 = ((wbinnext + 1'b1) >> 1) ^ (wbinnext + 1'b1);
+    assign wgraynextp1 = ((wbinnext + AWFULLSIZE) >> 1) ^ (wbinnext + AWFULLSIZE);
 
     //------------------------------------------------------------------
     // Simplified version of the three necessary full-tests:
