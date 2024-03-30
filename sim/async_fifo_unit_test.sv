@@ -5,12 +5,26 @@ module async_fifo_unit_test;
 
     `SVUT_SETUP
 
-    integer i;
+    `ifndef AEMPTY
+    `define AEMPTY 1
+    `endif
+
+    `ifndef AFULL
+    `define AFULL 1
+    `endif
+
+    `ifndef FALLTHROUGH
+    `define FALLTHROUGH "TRUE"
+    `endif
 
     parameter DSIZE = 32;
     parameter ASIZE = 4;
-    parameter AREMPTYSIZE = 1;
-    parameter AWFULLSIZE = 1;
+    parameter AREMPTYSIZE = `AEMPTY;
+    parameter AWFULLSIZE = `AFULL;
+    parameter FALLTHROUGH = `FALLTHROUGH;
+    parameter MAX_TRAFFIC = 10;
+
+    integer timeout;
 
     reg              wclk;
     reg              wrst_n;
@@ -26,26 +40,27 @@ module async_fifo_unit_test;
     wire             arempty;
 
     async_fifo
-	#(
-		DSIZE,
-		ASIZE,
-        AWFULLSIZE,
-        AREMPTYSIZE
+    #(
+        .DSIZE        (DSIZE),
+        .ASIZE        (ASIZE),
+        .AWFULLSIZE   (AWFULLSIZE),
+        .AREMPTYSIZE  (AREMPTYSIZE),
+        .FALLTHROUGH  (FALLTHROUGH)
     )
     dut
     (
-		wclk,
-		wrst_n,
-		winc,
-		wdata,
-		wfull,
-		awfull,
-		rclk,
-		rrst_n,
-		rinc,
-		rdata,
-		rempty,
-		arempty
+        wclk,
+        wrst_n,
+        winc,
+        wdata,
+        wfull,
+        awfull,
+        rclk,
+        rrst_n,
+        rinc,
+        rdata,
+        rempty,
+        arempty
     );
 
     // An example to create a clock
@@ -55,13 +70,10 @@ module async_fifo_unit_test;
     always #3 rclk <= ~rclk;
 
     // An example to dump data for visualization
-`ifdef USE_VLOG_TB_UTILS
-   vlog_tb_utils vtu();
-`else
     initial begin
+        $dumpfile("async_fifo_unit_test.vcd");
         $dumpvars(0, async_fifo_unit_test);
     end
-`endif
 
     task setup(msg="Setup testcase");
     begin
@@ -75,6 +87,7 @@ module async_fifo_unit_test;
         wrst_n = 1;
         rrst_n = 1;
         #50;
+        timeout = 0;
         @(posedge wclk);
 
     end
@@ -88,14 +101,14 @@ module async_fifo_unit_test;
 
     `TEST_SUITE("ASYNCFIFO")
 
-    `UNIT_TEST("IDLE")
+    `UNIT_TEST("TEST_IDLE")
 
         `FAIL_IF(wfull);
         `FAIL_IF(!rempty);
 
     `UNIT_TEST_END
 
-    `UNIT_TEST("SINGLE_WRITE_THEN_READ")
+    `UNIT_TEST("TEST_SINGLE_WRITE_THEN_READ")
 
         @(posedge wclk)
 
@@ -117,9 +130,9 @@ module async_fifo_unit_test;
 
     `UNIT_TEST_END
 
-    `UNIT_TEST("MULTIPLE_WRITE_AND_READ")
+    `UNIT_TEST("TEST_MULTIPLE_WRITE_THEN_READ")
 
-        for (i=0; i<10; i=i+1) begin
+        for (int i=0; i<10; i=i+1) begin
             @(negedge wclk);
             winc = 1;
             wdata = i;
@@ -132,7 +145,7 @@ module async_fifo_unit_test;
         @(posedge rclk);
 
         rinc = 1;
-        for (i=0; i<10; i=i+1) begin
+        for (int i=0; i<10; i=i+1) begin
             @(posedge rclk);
             `FAIL_IF_NOT_EQUAL(rdata, i);
         end
@@ -143,7 +156,7 @@ module async_fifo_unit_test;
 
         winc = 1;
 
-        for (i=0; i<2**ASIZE; i=i+1) begin
+        for (int i=0; i<2**ASIZE; i=i+1) begin
             @(negedge wclk)
             wdata = i;
         end
@@ -160,7 +173,7 @@ module async_fifo_unit_test;
 
         `FAIL_IF_NOT_EQUAL(rempty, 1);
 
-        for (i=0; i<2**ASIZE; i=i+1) begin
+        for (int i=0; i<2**ASIZE; i=i+1) begin
             @(posedge wclk)
             winc = 1;
             wdata = i;
@@ -170,14 +183,19 @@ module async_fifo_unit_test;
 
     `UNIT_TEST_END
 
-    `UNIT_TEST("TEST_SIMPLE_ALMOST_EMPTY_FLAG")
+    `UNIT_TEST("TEST_ALMOST_EMPTY_FLAG")
 
         `FAIL_IF_NOT_EQUAL(arempty, 0);
 
-        @(posedge wclk)
         winc = 1;
-        wdata = i;
-        @(posedge wclk);
+        for (int i=0; i<AREMPTYSIZE; i=i+1) begin
+
+            @(negedge wclk)
+            wdata = i;
+
+        end
+
+        @(negedge wclk);
         winc = 0;
 
         #100;
@@ -185,10 +203,10 @@ module async_fifo_unit_test;
 
     `UNIT_TEST_END
 
-    `UNIT_TEST("TEST_SIMPLE_ALMOST_FULL_FLAG")
+    `UNIT_TEST("TEST_ALMOST_FULL_FLAG")
 
         winc = 1;
-        for (i=0; i<2**ASIZE; i=i+1) begin
+        for (int i=0; i<2**ASIZE-AWFULLSIZE; i=i+1) begin
 
             @(negedge wclk)
             wdata = i;
@@ -199,27 +217,52 @@ module async_fifo_unit_test;
         winc = 0;
 
         @(posedge wclk)
-        `FAIL_IF_NOT_EQUAL(wfull, 1);
+        `FAIL_IF_NOT_EQUAL(awfull, 1);
 
     `UNIT_TEST_END
 
-    `UNIT_TEST("TEST_CONSECUTIVE_ALMOST_EMPTY_FULL")
+    `UNIT_TEST("TEST_CONCURRENT_WRITE_READ")
 
-        winc = 1;
-        for (i=0; i<2**ASIZE; i=i+1) begin
-
-            @(negedge wclk)
-            wdata = i;
-
+        fork
+        // Concurrent accesses
+        begin
+            fork
+            // Write source
+            begin
+                winc = 1;
+                for (int i=0; i<MAX_TRAFFIC; i=i+1) begin
+                    while (wfull)
+                        @(negedge wclk);
+                    @(negedge wclk);
+                    wdata = i;
+                end
+                winc = 0;
+            end
+            // Read sink
+            begin
+                for (int i=0; i<MAX_TRAFFIC; i=i+1) begin
+                    while (rempty)
+                        @(posedge rclk);
+                    rinc = 1;
+                    @(negedge rclk);
+                    `FAIL_IF_NOT_EQUAL(rdata, i);
+                end
+                rinc = 0;
+            end
+            join
         end
-
-        @(negedge wclk);
-        winc = 0;
-
-        @(posedge wclk)
-        `FAIL_IF_NOT_EQUAL(wfull, 1);
+        // Timeout management
+        begin
+            while (timeout<10000) begin
+                timeout = timeout + 1;
+                @(posedge rclk);
+            end
+            `ERROR("Reached timeout!");
+        end
+        join_any
 
     `UNIT_TEST_END
+
     `TEST_SUITE_END
 
 endmodule

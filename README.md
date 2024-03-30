@@ -19,7 +19,7 @@ Design](http://www.sunburst-design.com/papers/CummingsSNUG2002SJ_FIFO1.pdf).
 
 The simulation testcases available use [Icarus Verilog](http://iverilog.icarus.com) and [SVUT](https://github.com/dpretet/svut) tool to run the tests.
 
-The FIFO is fully functional and used in many successful project
+The FIFO is fully functional and used in many successful projects.
 
 # Usage
 

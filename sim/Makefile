@@ -1,12 +1,12 @@
 test:
-	@svutRun -f files.f
+	@svutRun -f files.f -define "AFULL=1;AEMPTY=1"
+	@svutRun -f files.f -define "AFULL=3;AEMPTY=2"
 
 test-dry-run:
 	@svutRun -f files.f -dry-run
 
 gui:
 	@svutRun -f files.f -gui
-    :qa
 
 clean:
 	@-rm -f *.vcd

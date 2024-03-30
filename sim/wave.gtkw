@@ -1,39 +1,55 @@
 [*]
-[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Fri Sep 11 15:40:43 2020
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Sat Mar 30 09:48:17 2024
 [*]
-[dumpfile] "/Users/damien/workspace/hdl/meduram/deps/async_fifo/sim/test/dump.vcd"
-[dumpfile_mtime] "Fri Sep 11 12:31:34 2020"
-[dumpfile_size] 33471
-[savefile] "/Users/damien/workspace/hdl/meduram/deps/async_fifo/sim/test/wave.gtkw"
-[timestart] 0
-[size] 1280 730
-[pos] 148 -1
-*-17.372753 414900 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[dumpfile] "/Users/damien/workspace/hdl/async_fifo/sim/async_fifo_unit_test.vcd"
+[dumpfile_mtime] "Sat Mar 30 09:47:41 2024"
+[dumpfile_size] 35394
+[savefile] "wave.gtkw"
+[timestart] 2131420
+[size] 1440 784
+[pos] -1 -1
+*-13.015144 2119510 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] async_fifo_unit_test.
 [treeopen] async_fifo_unit_test.dut.
-[sst_width] 196
-[signals_width] 332
+[sst_width] 253
+[signals_width] 150
 [sst_expanded] 1
-[sst_vpaned_height] 285
+[sst_vpaned_height] 357
 @200
 -TB
+@420
+async_fifo_unit_test.svut_nb_test
 @28
+[color] 7
 async_fifo_unit_test.dut.wclk
+[color] 7
 async_fifo_unit_test.dut.wrst_n
+[color] 7
 async_fifo_unit_test.dut.winc
 @22
+[color] 7
 async_fifo_unit_test.wdata[31:0]
 @28
+[color] 7
 async_fifo_unit_test.dut.wfull
+[color] 7
 async_fifo_unit_test.dut.awfull
+@29
+[color] 2
 async_fifo_unit_test.dut.rclk
+@28
+[color] 2
 async_fifo_unit_test.dut.rrst_n
+[color] 2
 async_fifo_unit_test.dut.rinc
 @22
+[color] 2
 async_fifo_unit_test.rdata[31:0]
 @28
+[color] 2
 async_fifo_unit_test.dut.rempty
+[color] 2
 async_fifo_unit_test.dut.arempty
 @200
 -DUT
@@ -50,9 +66,7 @@ async_fifo_unit_test.dut.wq2_rptr[4:0]
 @22
 async_fifo_unit_test.dut.fifomem.waddr[3:0]
 async_fifo_unit_test.dut.fifomem.wdata[31:0]
-@23
 async_fifo_unit_test.dut.fifomem.raddr[3:0]
-@22
 async_fifo_unit_test.dut.fifomem.rdata[31:0]
 @200
 -RD PTR EMPTY

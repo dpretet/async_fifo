@@ -7,11 +7,16 @@
 module async_fifo
 
     #(
+        // Data width
         parameter DSIZE = 8,
+        // Address width
         parameter ASIZE = 4,
+        // Almost full thresold
         parameter AWFULLSIZE = 1,
+        // Almost empty thresold
         parameter AREMPTYSIZE = 1,
-        parameter FALLTHROUGH = "TRUE" // First word fall-through without latency
+        // First word fall-through without latency
+        parameter FALLTHROUGH = "TRUE"
     )(
         input  wire             wclk,
         input  wire             wrst_n,
