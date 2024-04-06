@@ -8,7 +8,7 @@ module wptr_full
 
 	#(
 		parameter ADDRSIZE = 4,
-        parameter AWFULLSIZE = 1
+        parameter [ADDRSIZE:0]AWFULLSIZE = 1
 	)(
 		input  wire                wclk,
 		input  wire                wrst_n,
