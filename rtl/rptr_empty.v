@@ -7,8 +7,7 @@
 module rptr_empty
 
     #(
-    parameter ADDRSIZE = 4,
-    parameter [ADDRSIZE:0]AREMPTYSIZE = 1
+    parameter ADDRSIZE = 4
     )(
     input  wire                rclk,
     input  wire                rrst_n,
@@ -40,7 +39,7 @@ module rptr_empty
     assign raddr     = rbin[ADDRSIZE-1:0];
     assign rbinnext  = rbin + (rinc & ~rempty);
     assign rgraynext = (rbinnext >> 1) ^ rbinnext;
-    assign rgraynextm1 = ((rbinnext + AREMPTYSIZE) >> 1) ^ (rbinnext + AREMPTYSIZE);
+    assign rgraynextm1 = ((rbinnext + 1'b1) >> 1) ^ (rbinnext + 1'b1);
 
     //---------------------------------------------------------------
     // FIFO empty when the next rptr == synchronized wptr or on reset

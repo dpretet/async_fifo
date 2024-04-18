@@ -19,8 +19,6 @@ module async_fifo_unit_test;
 
     parameter DSIZE = 32;
     parameter ASIZE = 4;
-    parameter AREMPTYSIZE = `AEMPTY;
-    parameter AWFULLSIZE = `AFULL;
     parameter FALLTHROUGH = `FALLTHROUGH;
     parameter MAX_TRAFFIC = 10;
 
@@ -43,8 +41,6 @@ module async_fifo_unit_test;
     #(
         .DSIZE        (DSIZE),
         .ASIZE        (ASIZE),
-        .AWFULLSIZE   (AWFULLSIZE),
-        .AREMPTYSIZE  (AREMPTYSIZE),
         .FALLTHROUGH  (FALLTHROUGH)
     )
     dut
@@ -188,7 +184,7 @@ module async_fifo_unit_test;
         `FAIL_IF_NOT_EQUAL(arempty, 0);
 
         winc = 1;
-        for (int i=0; i<AREMPTYSIZE; i=i+1) begin
+        for (int i=0; i<1; i=i+1) begin
 
             @(negedge wclk)
             wdata = i;
@@ -206,7 +202,7 @@ module async_fifo_unit_test;
     `UNIT_TEST("TEST_ALMOST_FULL_FLAG")
 
         winc = 1;
-        for (int i=0; i<2**ASIZE-AWFULLSIZE; i=i+1) begin
+        for (int i=0; i<2**ASIZE-1; i=i+1) begin
 
             @(negedge wclk)
             wdata = i;
