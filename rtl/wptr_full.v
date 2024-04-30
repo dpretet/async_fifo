@@ -21,7 +21,7 @@ module wptr_full
 	);
 
     reg  [ADDRSIZE:0] wbin;
-    wire [ADDRSIZE:0] wgraynext, wbinnext, wgraynextp1;
+    wire [ADDRSIZE:0] wgraynext, wbinnext, wgraynextp1,wbinnextp1;
     wire              awfull_val, wfull_val;
 
 	// GRAYSTYLE2 pointer
@@ -37,8 +37,9 @@ module wptr_full
     // Memory write-address pointer (okay to use binary to address memory)
     assign waddr = wbin[ADDRSIZE-1:0];
     assign wbinnext  = wbin + (winc & ~wfull);
+    assign wbinnextp1 = wbin + (winc & ~wfull) + AWFULLSIZE;
     assign wgraynext = (wbinnext >> 1) ^ wbinnext;
-    assign wgraynextp1 = ((wbinnext + (ADDRSIZE+1)'(AWFULLSIZE)) >> 1) ^ (wbinnext + (ADDRSIZE+1)'(AWFULLSIZE));
+    assign wgraynextp1 = (wbinnextp1 >> 1) ^ wbinnextp1;
 
     //------------------------------------------------------------------
     // Simplified version of the three necessary full-tests:

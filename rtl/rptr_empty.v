@@ -21,7 +21,7 @@ module rptr_empty
     );
 
     reg  [ADDRSIZE:0] rbin;
-    wire [ADDRSIZE:0] rgraynext, rbinnext, rgraynextm1;
+    wire [ADDRSIZE:0] rgraynext, rbinnext, rgraynextm1,rbinnextm1;
     wire              arempty_val, rempty_val;
 
     //-------------------
@@ -39,8 +39,9 @@ module rptr_empty
     // Memory read-address pointer (okay to use binary to address memory)
     assign raddr     = rbin[ADDRSIZE-1:0];
     assign rbinnext  = rbin + (rinc & ~rempty);
+    assign rbinnextm1 = rbin + (rinc & ~rempty) + AREMPTYSIZE;
     assign rgraynext = (rbinnext >> 1) ^ rbinnext;
-    assign rgraynextm1 = ((rbinnext + (ADDRSIZE+1)'(AREMPTYSIZE)) >> 1) ^ (rbinnext + (ADDRSIZE+1)'(AREMPTYSIZE));
+    assign rgraynextm1 = (rbinnextm1 >> 1) ^ rbinnextm1;;
 
     //---------------------------------------------------------------
     // FIFO empty when the next rptr == synchronized wptr or on reset
