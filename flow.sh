@@ -72,6 +72,7 @@ run_sims() {
 	printinfo "Start simulation"
 	cd "$FIFO_DIR"/sim
 	svutRun -f files.f -test async_fifo_unit_test.sv -sim icarus
+    svutRun -f files.f -test async_fifo_almost_threshold_test.sv -sim icarus
 	return $?
 }
 
