@@ -35,7 +35,7 @@ module wptr_full
 
     // Memory write-address pointer (okay to use binary to address memory)
     assign waddr = wbin[ADDRSIZE-1:0];
-    assign wbinnext  = wbin + (winc & ~wfull);
+    assign wbinnext  = wbin + ((winc & ~wfull) ? 1 : 0);
     assign wgraynext = (wbinnext >> 1) ^ wbinnext;
     assign wgraynextp1 = ((wbinnext + 1'b1) >> 1) ^ (wbinnext + 1'b1);
 
