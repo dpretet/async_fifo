@@ -4,7 +4,7 @@
 
 This directory contains a Yosys-based logical synthesis flow for the
 `async_fifo` top level. It synthesizes the RTL using the default parameters
-(`DSIZE=8`, `ASIZE=4`, `FALLTHROUGH="TRUE"`), maps sequential cells and
+(`DSIZE=8`, `ASIZE=4`), maps sequential cells and
 combinational logic against the included `cmos.lib`, and writes the generated
 netlist to `syn/async_fifo_syn.v`.
 

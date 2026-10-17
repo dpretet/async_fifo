@@ -56,7 +56,10 @@ separately.
 All three top levels have the same parameters:
 - `DSIZE`: the size in bits of the datapath
 - `ASIZE`: the size in bits of the internal RAM address bus. This implies the FIFO can be configured only with power of 2 depth
-- `FALLTHROUGH`: allow to reduce the inner latency by doing a combinatorial read
+
+The internal-memory FIFO variants use first-word-fall-through reads: `rdata`
+shows the current head word and is valid when `empty` is deasserted. The
+external-RAM wrapper's read timing is determined by the attached RAM.
 
 
 # License

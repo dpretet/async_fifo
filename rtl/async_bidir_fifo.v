@@ -22,8 +22,7 @@ module async_bidir_fifo
 
   #(
     parameter DSIZE         = 8,
-    parameter ASIZE         = 4,
-    parameter FALLTHROUGH   = "TRUE" // First word fall-through
+    parameter ASIZE         = 4
     ) (
        input wire              a_clk,
        input wire              a_rst_n,
@@ -169,7 +168,7 @@ module async_bidir_fifo
   // FIFO RAM
   //////////////////////////////////////////////////////////////////////////////
 
-  fifomem_dp #(DSIZE, ASIZE, FALLTHROUGH)
+  fifomem_dp #(DSIZE, ASIZE)
   fifomem_dp
     (
      .a_clk   (a_clk),

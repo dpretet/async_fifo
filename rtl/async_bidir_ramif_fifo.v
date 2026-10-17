@@ -22,8 +22,7 @@ module async_bidir_ramif_fifo
 
   #(
     parameter DSIZE         = 8,
-    parameter ASIZE         = 4,
-    parameter FALLTHROUGH   = "FALSE" // First word fall-through, not sure it can be disabled for this
+    parameter ASIZE         = 4
     ) (
        input wire              a_clk,
        input wire              a_rst_n,

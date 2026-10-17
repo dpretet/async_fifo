@@ -29,4 +29,5 @@ The simulation requires Icarus Verilog and SVUT (`svutRun`) on `PATH`.
 
 The randomized suite runs with write/read clock half-period settings of 1/2,
 2/1, and 4/4 ns (full periods of 2/4, 4/2, and 8/8 ns). Both suites default to
-`DSIZE=32`, `ASIZE=4`, and `FALLTHROUGH="TRUE"`.
+`DSIZE=32` and `ASIZE=4` and exercise the fixed first-word-fall-through read
+behavior.

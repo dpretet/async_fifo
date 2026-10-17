@@ -9,8 +9,7 @@ relevant module documentation. OpenCode users can follow
 
 Please include, where applicable:
 
-* the affected top level and parameter values (`DSIZE`, `ASIZE`, and
-  `FALLTHROUGH`);
+* the affected top level and parameter values (`DSIZE` and `ASIZE`);
 * write/read clock periods and phase relationship;
 * reset sequence and relevant write/read enables;
 * expected and observed behavior, with a minimal reproducible test;

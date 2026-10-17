@@ -5,10 +5,6 @@ module async_fifo_random_unit_test;
 
     `SVUT_SETUP
 
-    `ifndef FALLTHROUGH
-    `define FALLTHROUGH "TRUE"
-    `endif
-
     `ifndef CLK_I
     `define CLK_I 3
     `endif
@@ -19,11 +15,12 @@ module async_fifo_random_unit_test;
 
     parameter DSIZE = 32;
     parameter ASIZE = 4;
-    parameter FALLTHROUGH = `FALLTHROUGH;
     parameter MAX_TRAFFIC = 1000;
     parameter MAX_TIMEOUT = MAX_TRAFFIC * 10;
 
     integer timeout;
+
+    string msg;
 
     reg              wclk;
     reg              wrst_n;
@@ -43,6 +40,7 @@ module async_fifo_random_unit_test;
     logic [31:0] lfsr_i, lfsr_o;
     logic [31:0] cnt_i, cnt_o, xfer_cnt;
     logic [31:0] w_lfsr, r_lfsr;
+    logic read_error;
 
     ////////////////////////////////////////
     // Design Under Test
@@ -51,8 +49,7 @@ module async_fifo_random_unit_test;
     async_fifo
     #(
         .DSIZE        (DSIZE),
-        .ASIZE        (ASIZE),
-        .FALLTHROUGH  (FALLTHROUGH)
+        .ASIZE        (ASIZE)
     )
     dut
     (
@@ -159,7 +156,7 @@ module async_fifo_random_unit_test;
 
         if (!wrst_n) begin
             wdata <= 32'b0;
-        end begin
+        end else begin
             if (winc & !wfull)
                 wdata <= wdata + 1;
         end
@@ -188,11 +185,16 @@ module async_fifo_random_unit_test;
 
         if (!rrst_n) begin
             rdata_expected <= 32'b0;
-        end begin
+            read_error <= 0;
+        end else begin
             if (rinc & !rempty) begin
                 rdata_expected <= rdata_expected + 1;
-                if (rdata != rdata_expected)
+                if (rdata != rdata_expected) begin
                     `ERROR("Wrong data read from FIFO!");
+                    $display("Read: %x", rdata);
+                    $display("Expected: %x", rdata_expected);
+                    read_error <= 1;
+                end
             end
         end
 
@@ -215,7 +217,7 @@ module async_fifo_random_unit_test;
         rrst_n = 1;
         run_traffic = 1'b1;
 
-        while ((xfer_cnt < MAX_TRAFFIC) && (timeout < MAX_TIMEOUT)) begin
+        while ((xfer_cnt < MAX_TRAFFIC) && (timeout < MAX_TIMEOUT) && !read_error) begin
             @(posedge rclk);
             if ((rempty == 1'b0) && (rinc == 1'b1))
                 xfer_cnt = xfer_cnt + 1;
@@ -223,8 +225,14 @@ module async_fifo_random_unit_test;
         end
 
         run_traffic = 1'b0;
-        if (xfer_cnt < MAX_TRAFFIC)
+
+        if (read_error) begin
+            `ERROR("Wrong DATA read from FIFO");
+        end else if (xfer_cnt < MAX_TRAFFIC) begin
             `ERROR("Simulation reached timeout!");
+        end
+
+
     `UNIT_TEST_END
 
     `TEST_SUITE_END

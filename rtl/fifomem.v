@@ -8,8 +8,7 @@ module fifomem
 
     #(
         parameter  DATASIZE = 8,    // Memory data word width
-        parameter  ADDRSIZE = 4,    // Number of mem address bits
-        parameter  FALLTHROUGH = "TRUE" // First word fall-through
+        parameter  ADDRSIZE = 4     // Number of mem address bits
     ) (
         input  wire                wclk,
         input  wire                wclken,
@@ -32,20 +31,7 @@ module fifomem
             mem[waddr] <= wdata;
     end
 
-    generate
-        if (FALLTHROUGH == "TRUE")
-        begin : fallthrough
-            assign rdata = mem[raddr];
-        end
-        else
-        begin : registered_read
-            always @(posedge rclk) begin
-                if (rclken)
-                    rdata_r <= mem[raddr];
-            end
-            assign rdata = rdata_r;
-        end
-    endgenerate
+    assign rdata = mem[raddr];
 
 endmodule
 

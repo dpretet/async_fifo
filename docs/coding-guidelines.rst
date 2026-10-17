@@ -19,9 +19,11 @@ RTL conventions
 * Preserve active-low asynchronous reset behavior for pointer and synchronizer
   state. Do not reset the RAM array unless the memory implementation requires
   it and the change is specifically intended.
-* Preserve RAM inference and both ``FALLTHROUGH`` modes. Consider read-during-
-  write behavior, clock enables, and the actual write enables when changing RAM
-  wrappers.
+* Preserve the internal-memory FIFOs' first-word-fall-through read contract:
+  ``rdata`` presents the current head word while ``rempty`` is deasserted. The
+  external-RAM wrapper's read timing depends on the attached RAM. Consider
+  read-during-write behavior, clock enables, and actual write enables when
+  changing RAM wrappers.
 * ``ASIZE`` represents address bits and implies a depth of ``2**ASIZE`` words.
   The current full-pointer comparison uses the top two Gray bits; review the
   supported minimum ``ASIZE`` when changing pointer equations or parameter
@@ -38,7 +40,8 @@ For pointer, flag, or RAM changes, consider tests for:
 
 * empty after reset, first write/read, and ordering across pointer wrap;
 * filling to full, draining to empty, and attempts to read/write at the limits;
-* simultaneous read/write, stalls, and each supported ``FALLTHROUGH`` mode;
+* simultaneous read/write and stalls while preserving the first-word-fall-through
+  read contract;
 * unrelated clock periods and phases, including faster-write and faster-read
   cases;
 * reset behavior on both sides and the documented requirement to reset both

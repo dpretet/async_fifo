@@ -20,8 +20,9 @@ the existing module boundaries and coding style, and read
 - Binary pointers address the RAM locally; Gray-coded pointers cross clock
   domains through two-stage synchronizers.
 - Reset is active-low. Both sides must be reset before normal operation.
-- `FALLTHROUGH` is a string parameter (`"TRUE"` or `"FALSE"`) and changes the
-  read path and latency.
+- Internal-memory FIFO variants use a fixed first-word-fall-through read path:
+  `rdata` presents the head word while `rempty` is deasserted. The external-RAM
+  wrapper's read timing depends on the attached RAM.
 - The Yosys flow is logical synthesis; it does not establish physical CDC bus
   skew or routing constraints.
 - Do not assume the bidirectional wrappers have the same enable/full protection

@@ -21,9 +21,8 @@
 module fifomem_dp
 
     #(
-        parameter  DATASIZE     = 8,      // Memory data word width
-        parameter  ADDRSIZE     = 4,      // Number of mem address bits
-        parameter  FALLTHROUGH  = "TRUE"  // First word fall-through
+        parameter  DATASIZE     = 8,     // Memory data word width
+        parameter  ADDRSIZE     = 4      // Number of mem address bits
     ) (
         input  wire                a_clk,
         input  wire [DATASIZE-1:0] a_wdata,
@@ -43,52 +42,21 @@ module fifomem_dp
     reg [DATASIZE-1:0] a_rdata_r;
     reg [DATASIZE-1:0] b_rdata_r;
 
-    generate
+    localparam DEPTH = 1<<ADDRSIZE;
+    reg [DATASIZE-1:0] mem [0:DEPTH-1];
 
-        localparam DEPTH = 1<<ADDRSIZE;
-        reg [DATASIZE-1:0] mem [0:DEPTH-1];
 
-        if (FALLTHROUGH == "TRUE") begin : fallthrough
+    always @(posedge a_clk)
+        if (a_winc)
+            mem[a_addr] <= a_wdata;
 
-            always @(posedge a_clk)
-                if (a_winc)
-                    mem[a_addr] <= a_wdata;
+    assign a_rdata  = mem[a_addr];
 
-            assign a_rdata  = mem[a_addr];
+    always @(posedge b_clk)
+        if (b_winc)
+            mem[b_addr] <= b_wdata;
 
-            always @(posedge b_clk)
-                if (b_winc)
-                    mem[b_addr] <= b_wdata;
-
-            assign b_rdata = mem[b_addr];
-
-        end else begin : registered
-
-            wire a_en = a_rinc | a_winc;
-
-            always @(posedge a_clk)
-                if (a_en) begin
-                    if (a_winc)
-                        mem[a_addr] <= a_wdata;
-                    a_rdata_r <= mem[a_addr];
-                end
-
-            assign a_rdata = a_rdata_r;
-
-            wire b_en = b_rinc | b_winc;
-
-            always @(posedge b_clk)
-                if (b_en) begin
-                    if (b_winc)
-                        mem[b_addr] <= b_wdata;
-                    b_rdata_r <= mem[b_addr];
-                end
-
-            assign b_rdata = b_rdata_r;
-
-        end // block: registered
-    endgenerate
-
+    assign b_rdata = mem[b_addr];
 
 endmodule
 

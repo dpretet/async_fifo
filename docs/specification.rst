@@ -30,11 +30,13 @@ Specification
 
 * Read interface usage:
 
+  * ``rdata`` presents the word at the current read pointer and is valid while
+    ``rempty`` is deasserted (first-word-fall-through behavior).
+
   * A read enable control (`rden`), enabling the data read. This control
     increments the read pointer to address the next word to read. `rden`
-    doesn't have to be asserted when empty flag is enabled. If asserted, the
-    data under read can be a valid data. `rden` can be asserted continuously,
-    or occasionally.
+    doesn't have to be asserted when the empty flag is asserted. `rden` can be
+    asserted continuously, or occasionally.
 
   * An empty flag is asserted when the FIFO is empty. The flag is asserted on
     the next clock cycle last available word has been read if no further info

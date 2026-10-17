@@ -13,13 +13,8 @@ module async_fifo_directed_unit_test;
     `define AFULL 1
     `endif
 
-    `ifndef FALLTHROUGH
-    `define FALLTHROUGH "TRUE"
-    `endif
-
     parameter DSIZE = 32;
     parameter ASIZE = 4;
-    parameter FALLTHROUGH = `FALLTHROUGH;
     parameter MAX_TRAFFIC = 10;
 
     integer timeout;
@@ -40,8 +35,7 @@ module async_fifo_directed_unit_test;
     async_fifo
     #(
         .DSIZE        (DSIZE),
-        .ASIZE        (ASIZE),
-        .FALLTHROUGH  (FALLTHROUGH)
+        .ASIZE        (ASIZE)
     )
     dut
     (
@@ -260,4 +254,3 @@ module async_fifo_directed_unit_test;
     `TEST_SUITE_END
 
 endmodule
-
