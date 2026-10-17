@@ -8,17 +8,12 @@ Specification
 
 * It can be synthetized either for ASIC or FPGAs.
 
-* It can be configured for any data bus width, specified in bits.
+* The data word width is configured by ``DSIZE`` and is measured in bits.
 
-* Its depth can be configured in bytes.
-
-  * If the FIFO depth is not modulo the datapath, the real FIFO depth infered
-    is round up to the next datapath width. For instance, if the datapath width
-    is 16 bytes and the depth specified being 20 bytes, the effective FIFO size
-    will be 32 bytes
-
-  * If the depth is modulo the datapath, the specified depth will be the
-    effective depth
+* The FIFO depth is configured by ``ASIZE``, the number of RAM address bits.
+  The depth is exactly ``2**ASIZE`` words; the RTL does not accept an arbitrary
+  byte-depth parameter or round a requested depth up to a supported size. The
+  total storage capacity is ``DSIZE * 2**ASIZE`` bits.
 
 
 * Write interface usage:

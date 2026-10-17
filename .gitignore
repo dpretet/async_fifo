@@ -6,3 +6,4 @@ tags
 lint.log script src
 async_fifo_syn.v
 lint.log
+sim/svut.log

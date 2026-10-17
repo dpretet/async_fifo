@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Copyright 2017 Damien Pretet ThotIP
+// Copyright 2017 Damien Pretet
 // Copyright 2018 Julius Baxter
 //
 // Licensed under the Apache License, Version 2.0 (the "License");

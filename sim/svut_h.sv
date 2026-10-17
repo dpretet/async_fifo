@@ -1,4 +1,4 @@
-/// Copyright 2021 The SVUT Authors
+/// Copyright 2024 The SVUT Authors
 ///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to
@@ -54,29 +54,36 @@
 /// and information with an appropriate color.
 
 `define MSG(msg) \
-    $display("\033[0;37m%s (@ %0t)\033[0m", msg, $realtime)
+    $display("\033[0;37m%s (@ %0t) (%s:%0d)\033[0m", msg, $realtime, `__FILE__, `__LINE__)
 
 `define INFO(msg) \
-    $display("\033[0;34mINFO: %s (@ %0t)\033[0m", msg, $realtime)
+    $display("\033[0;34mINFO: %s (@ %0t) (%s:%0d)\033[0m", msg, $realtime, `__FILE__, `__LINE__)
 
 `define SUCCESS(msg) \
-    $display("\033[0;32mSUCCESS: %s (@ %0t)\033[0m", msg, $realtime)
+    $display("\033[0;32mSUCCESS: %s (@ %0t) (%s:%0d)\033[0m", msg, $realtime, `__FILE__, `__LINE__)
 
 `define WARNING(msg) \
     begin\
-    $display("\033[1;33mWARNING: %s (@ %0t)\033[0m", msg, $realtime);\
+    $display("\033[1;33mWARNING: %s (@ %0t) (%s:%0d)\033[0m", msg, $realtime, `__FILE__, `__LINE__);\
     svut_warning += 1;\
     end
 
 `define CRITICAL(msg) \
     begin\
-    $display("\033[1;35mCRITICAL: %s (@ %0t)\033[0m", msg, $realtime);\
+    $display("\033[1;35mCRITICAL: %s (@ %0t) (%s:%0d)\033[0m", msg, $realtime, `__FILE__, `__LINE__);\
     svut_critical += 1;\
+    end
+
+/// This macro will not increment the error counter while displaying a failure
+/// message.
+`define FAILURE(msg) \
+    begin\
+    $display("\033[1;31mFAILURE: %s (@ %0t) (%s:%0d)\033[0m", msg, $realtime, `__FILE__, `__LINE__);\
     end
 
 `define ERROR(msg)\
     begin\
-    $display("\033[1;31mERROR: %s (@ %0t)\033[0m", msg, $realtime);\
+    $display("\033[1;31mERROR: %s (@ %0t) (%s:%0d)\033[0m", msg, $realtime, `__FILE__, `__LINE__);\
     svut_error += 1;\
     end
 
@@ -129,7 +136,7 @@ endfunction
 `define FAIL_IF_NOT(exp, message="") \
     svut_status = 0; \
     svut_msg = create_msg("FAIL_IF_NOT", message); \
-    if (!exp) begin \
+    if (!(exp)) begin \
         `ERROR(svut_msg); \
         svut_status = 1; \
     end
@@ -156,7 +163,7 @@ endfunction
 `define ASSERT(exp, message="") \
     svut_status = 0; \
     svut_msg = create_msg("ASSERT", message); \
-    if (!exp) begin \
+    if (!(exp)) begin \
         `ERROR(svut_msg); \
         svut_status = 1; \
     end
@@ -187,11 +194,11 @@ endfunction
         teardown(); \
         if (svut_error == 0) begin \
             svut_nb_test_success = svut_nb_test_success + 1; \
-            svut_msg = {"Test ", testnum, " pass"}; \
+            svut_msg = {"<< ", "Test ", testnum, ": ", svut_test_name, " >>", " pass"}; \
             `SUCCESS(svut_msg); \
         end else begin \
-            svut_msg = {"Test ", testnum, " fail"}; \
-            `ERROR(svut_msg); \
+            svut_msg = {"<< ", "Test ", testnum, ": ", svut_test_name, " >>", " fail"}; \
+            `FAILURE(svut_msg); \
             svut_fail_list = {svut_fail_list, " '", svut_test_name, "'"}; \
             svut_error_total += svut_error; \
         end \

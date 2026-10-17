@@ -1,3 +1,4 @@
+./lfsr32.sv
 ../rtl/async_fifo.v
 ../rtl/fifomem.v
 ../rtl/rptr_empty.v

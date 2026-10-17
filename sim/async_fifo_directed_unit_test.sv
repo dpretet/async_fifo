@@ -1,7 +1,7 @@
 `include "svut_h.sv"
 `timescale 1 ns / 1 ps
 
-module async_fifo_unit_test;
+module async_fifo_directed_unit_test;
 
     `SVUT_SETUP
 
@@ -59,16 +59,14 @@ module async_fifo_unit_test;
         arempty
     );
 
-    // An example to create a clock
     initial wclk = 1'b0;
     always #2 wclk <= ~wclk;
     initial rclk = 1'b0;
     always #3 rclk <= ~rclk;
 
-    // An example to dump data for visualization
     initial begin
-        $dumpfile("async_fifo_unit_test.vcd");
-        $dumpvars(0, async_fifo_unit_test);
+        $dumpfile("async_fifo_directed_unit_test.vcd");
+        $dumpvars(0, async_fifo_directed_unit_test);
     end
 
     task setup(msg="Setup testcase");
@@ -95,7 +93,7 @@ module async_fifo_unit_test;
     end
     endtask
 
-    `TEST_SUITE("ASYNCFIFO")
+    `TEST_SUITE("DIRECTED")
 
     `UNIT_TEST("TEST_IDLE")
 

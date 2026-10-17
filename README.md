@@ -32,10 +32,31 @@ The three FIFOs have a list file to get the associated fileset.
 
 The testbench in `sim/` provides an example about the instance and the configuration.
 
+# Development
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for support requests, contribution
+expectations, and the project-local [OpenCode workflow](docs/agent-workflow.md).
+
+To use the OpenCode flow, start a session in this repository and run the
+commands as needed:
+
+1. `/rtl-plan <change>` to inspect the design and plan a scoped change without
+   editing files.
+2. `/rtl-implement <change>` to implement the agreed change and run relevant
+   checks.
+3. `/rtl-verify <change>` to run checks and report their exact results.
+4. `/rtl-review` to get a read-only review of staged and unstaged changes.
+
+Planning and implementation run in the current session. Verification and review
+run as child sessions; they are not automatic, so inspect their reports before
+proceeding. For example, use `/rtl-plan Fix the full-write behavior in the
+bidirectional FIFO`, then invoke implementation, verification, and review
+separately.
+
 All three top levels have the same parameters:
 - `DSIZE`: the size in bits of the datapath
 - `ASIZE`: the size in bits of the internal RAM address bus. This implies the FIFO can be configured only with power of 2 depth
-- `FALLTHROUGH`: allow to reduce the inner latency and propagate faster the data through the FIFO
+- `FALLTHROUGH`: allow to reduce the inner latency by doing a combinatorial read
 
 
 # License

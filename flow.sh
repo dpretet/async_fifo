@@ -51,6 +51,8 @@ help() {
     echo ""
     echo "      ./flow.sh sim"
     echo ""
+    echo "      ./flow.sh clean"
+    echo ""
     echo "DESCRIPTION"
     echo ""
     echo "      This flow handles the different operations available"
@@ -64,15 +66,24 @@ help() {
     echo "      Launch the synthesis script relying on Yosys"
     echo ""
     echo "      ./flow.sh sim"
+    echo ""
+    echo "      Run the directed and randomized Icarus simulations"
+    echo ""
+    echo "      ./flow.sh clean"
+    echo ""
+    echo "      Remove simulation artifacts and the combined test log"
     echo -e "${NC}"
 }
 
 
 run_sims() {
 	printinfo "Start simulation"
-	cd "$FIFO_DIR"/sim
-	svutRun -f files.f -test async_fifo_unit_test.sv -sim icarus
-	return $?
+	"$FIFO_DIR/sim/run.sh" test
+}
+
+run_clean() {
+	printinfo "Clean simulation artifacts"
+	"$FIFO_DIR/sim/run.sh" clean
 }
 
 run_syn() {
@@ -160,6 +171,11 @@ main() {
     if [[ $1 == "syn" ]]; then
 		run_syn
         return $?
+    fi
+
+    if [[ $1 == "clean" ]]; then
+        run_clean
+        exit $?
     fi
 }
 
