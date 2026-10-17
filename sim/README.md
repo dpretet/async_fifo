@@ -26,8 +26,16 @@ The simulation requires Icarus Verilog and SVUT (`svutRun`) on `PATH`.
   checks accepted read data against an ordered sequence. Its payload is an
   incrementing sequence, while the LFSRs vary traffic timing. The test stops
   after the configured transfer count or reports a timeout through SVUT.
+* `async_bidir_fifo_random_unit_test.sv` runs an A-to-B phase followed by a
+  B-to-A phase. LFSRs vary the active writer and reader enables; per-direction
+  counters check accepted data ordering. The inactive direction's enables stay
+  low, while requests may still occur at full/empty and are counted only when
+  accepted.
+* `async_bidir_ramif_fifo_random_unit_test.sv` runs the same traffic and
+  scoreboarding against the external-RAM top, using a behavioral dual-port RAM
+  model with combinational reads.
 
-The randomized suite runs with write/read clock half-period settings of 1/2,
-2/1, and 4/4 ns (full periods of 2/4, 4/2, and 8/8 ns). Both suites default to
+The randomized suites run with write/read clock half-period settings of 1/2,
+2/1, and 4/4 ns (full periods of 2/4, 4/2, and 8/8 ns). The suites default to
 `DSIZE=32` and `ASIZE=4` and exercise the fixed first-word-fall-through read
 behavior.

@@ -68,9 +68,17 @@ module async_bidir_ramif_fifo
   wire [ASIZE-1:0]             a_waddr, a_raddr, b_waddr, b_raddr;
   wire [  ASIZE:0]             a_wptr, b_rptr, a2b_wptr, b2a_rptr;
   wire [  ASIZE:0]             a_rptr, b_wptr, a2b_rptr, b2a_wptr;
+  wire                          a_wreq, a_rreq, b_wreq, b_rreq;
+  wire                          a_waccept, b_waccept;
 
   assign a_addr = a_dir ? a_waddr : a_raddr;
   assign b_addr = b_dir ? b_waddr : b_raddr;
+  assign a_wreq = a_winc & a_dir;
+  assign a_rreq = a_rinc & !a_dir;
+  assign b_wreq = b_winc & b_dir;
+  assign b_rreq = b_rinc & !b_dir;
+  assign a_waccept = a_wreq & !a_full;
+  assign b_waccept = b_wreq & !b_full;
 
   //////////////////////////////////////////////////////////////////////////////
   // A-side logic
@@ -96,14 +104,13 @@ module async_bidir_ramif_fifo
      .dest_ptr   (b2a_rptr)
      );
 
-  // The module handling the write requests
-  // outputs valid when dir == 0 (a is writing)
+  // Write-pointer requests are active only when A is the writer.
   wptr_full #(ASIZE)
   a_wptr_inst
     (
      .wclk     (a_clk),
      .wrst_n   (a_rst_n),
-     .winc     (a_winc),
+     .winc     (a_wreq),
      .wq2_rptr (b2a_rptr),
      .awfull   (a_afull),
      .wfull    (a_full),
@@ -117,7 +124,7 @@ module async_bidir_ramif_fifo
     (
      .rclk     (a_clk),
      .rrst_n   (a_rst_n),
-     .rinc     (a_rinc),
+     .rinc     (a_rreq),
      .rq2_wptr (b2a_wptr),
      .arempty  (a_aempty),
      .rempty   (a_empty),
@@ -149,14 +156,13 @@ module async_bidir_ramif_fifo
      .dest_ptr   (a2b_rptr)
      );
 
-  // The module handling the write requests
-  // outputs valid when dir == 0 (b is writing)
+  // Write-pointer requests are active only when B is the writer.
   wptr_full #(ASIZE)
   b_wptr_inst
     (
      .wclk     (b_clk),
      .wrst_n   (b_rst_n),
-     .winc     (b_winc),
+     .winc     (b_wreq),
      .wq2_rptr (a2b_rptr),
      .awfull   (b_afull),
      .wfull    (b_full),
@@ -170,7 +176,7 @@ module async_bidir_ramif_fifo
     (
      .rclk     (b_clk),
      .rrst_n   (b_rst_n),
-     .rinc     (b_rinc),
+     .rinc     (b_rreq),
      .rq2_wptr (a2b_wptr),
      .arempty  (b_aempty),
      .rempty   (b_empty),
@@ -186,14 +192,14 @@ module async_bidir_ramif_fifo
   assign o_ram_a_wdata = a_wdata;
   assign a_rdata  = i_ram_a_rdata;
   assign o_ram_a_addr  = a_addr;
-  assign o_ram_a_rinc  = a_rinc & !a_dir;
-  assign o_ram_a_winc  = a_winc & a_dir;
+  assign o_ram_a_rinc  = a_rreq;
+  assign o_ram_a_winc  = a_waccept;
   assign o_ram_b_clk   = b_clk;
   assign o_ram_b_wdata = b_wdata;
   assign b_rdata  = i_ram_b_rdata;
   assign o_ram_b_addr  = b_addr;
-  assign o_ram_b_rinc  = b_rinc & !b_dir;
-  assign o_ram_b_winc  = b_winc & b_dir;
+  assign o_ram_b_rinc  = b_rreq;
+  assign o_ram_b_winc  = b_waccept;
 
 endmodule
 

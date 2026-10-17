@@ -10,7 +10,7 @@ usage() {
 Usage: ./run.sh test|clean
 
 Commands:
-  test   Run the directed tests and three randomized clock configurations.
+  test   Run directed, basic-FIFO, and bidirectional random suites.
   clean  Remove simulation waveforms, executables, and the test log.
 
 Set LOG_FILE to override the default log path (relative paths are under sim/).
@@ -42,6 +42,24 @@ run_tests() {
     run_test "Random test: write and read clocks 4ns" \
         svutRun -f files.f -t ./async_fifo_random_unit_test.sv \
             -define "CLK_I=4;CLK_O=4" || command_failed=1
+    run_test "Bidirectional random: A clock 1ns, B clock 2ns" \
+        svutRun -f bidir_files.f -t ./async_bidir_fifo_random_unit_test.sv \
+            -define "CLK_A=1;CLK_B=2" || command_failed=1
+    run_test "Bidirectional random: A clock 2ns, B clock 1ns" \
+        svutRun -f bidir_files.f -t ./async_bidir_fifo_random_unit_test.sv \
+            -define "CLK_A=2;CLK_B=1" || command_failed=1
+    run_test "Bidirectional random: A and B clocks 4ns" \
+        svutRun -f bidir_files.f -t ./async_bidir_fifo_random_unit_test.sv \
+            -define "CLK_A=4;CLK_B=4" || command_failed=1
+    run_test "External-RAM bidirectional random: A clock 1ns, B clock 2ns" \
+        svutRun -f bidir_ramif_files.f -t ./async_bidir_ramif_fifo_random_unit_test.sv \
+            -define "CLK_A=1;CLK_B=2" || command_failed=1
+    run_test "External-RAM bidirectional random: A clock 2ns, B clock 1ns" \
+        svutRun -f bidir_ramif_files.f -t ./async_bidir_ramif_fifo_random_unit_test.sv \
+            -define "CLK_A=2;CLK_B=1" || command_failed=1
+    run_test "External-RAM bidirectional random: A and B clocks 4ns" \
+        svutRun -f bidir_ramif_files.f -t ./async_bidir_ramif_fifo_random_unit_test.sv \
+            -define "CLK_A=4;CLK_B=4" || command_failed=1
 
     if (( command_failed )) || grep -Eiq 'ERROR:|FAILURE:|FATAL:|error:' "$LOG_FILE"; then
         printf 'FAIL: simulation reported an error (see %s)\n' "$LOG_FILE"
