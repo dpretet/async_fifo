@@ -47,7 +47,7 @@ help() {
     echo ""
     echo "      ./flow.sh help"
     echo ""
-    echo "      ./flow.sh syn"
+    echo "      ./flow.sh syn [async_fifo|async_bidir_fifo|async_bidir_ramif_fifo]"
     echo ""
     echo "      ./flow.sh sim"
     echo ""
@@ -61,9 +61,9 @@ help() {
     echo ""
     echo "      Print the help menu"
     echo ""
-    echo "      ./flow.sh syn"
+    echo "      ./flow.sh syn [top]"
     echo ""
-    echo "      Launch the synthesis script relying on Yosys"
+    echo "      Run the selected Yosys synthesis flow (default: async_fifo)"
     echo ""
     echo "      ./flow.sh sim"
     echo ""
@@ -87,10 +87,9 @@ run_clean() {
 }
 
 run_syn() {
-	printinfo "Start synthesis"
-	cd "$FIFO_DIR/syn"
-	./syn_asic.sh
-	return $?
+	local target="${1:-async_fifo}"
+	printinfo "Start synthesis for $target"
+	"$FIFO_DIR/syn/syn_asic.sh" "$target"
 }
 
 
@@ -169,8 +168,8 @@ main() {
     fi
 
     if [[ $1 == "syn" ]]; then
-		run_syn
-        return $?
+		run_syn "${2:-async_fifo}"
+		exit $?
     fi
 
     if [[ $1 == "clean" ]]; then

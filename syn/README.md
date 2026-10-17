@@ -2,40 +2,56 @@
 
 ## Overview
 
-This directory contains a Yosys-based logical synthesis flow for the
-`async_fifo` top level. It synthesizes the RTL using the default parameters
-(`DSIZE=8`, `ASIZE=4`), maps sequential cells and
-combinational logic against the included `cmos.lib`, and writes the generated
-netlist to `syn/async_fifo_syn.v`.
+Each top-level FIFO has its own Yosys flow directory. They share the
+standard-cell library in this directory:
+
+* `async_fifo/` synthesizes the basic dual-clock FIFO.
+* `async_bidir_fifo/` synthesizes the bidirectional FIFO with internal dual-port
+  RAM.
+* `async_bidir_ramif_fifo/` synthesizes the bidirectional FIFO control logic
+  with an external RAM interface.
+
+Each flow uses default parameters (`DSIZE=8`, `ASIZE=4`), performs logical
+synthesis, maps supported sequential and combinational logic against `cmos.lib`,
+and writes its netlist inside its own folder. The external-RAM variant
+synthesizes the interface and control logic only; the external memory itself is
+not part of that netlist.
+
+The internal bidirectional top has a shared dual-port memory with write ports
+on independent clocks. Yosys's generic flow does not map this multi-clock
+memory to `cmos.lib`; it remains a behavioral memory in the generated
+`async_bidir_fifo_syn.v`. Use a target-specific RAM macro or memory-mapping flow
+for implementation rather than treating that output as a fully mapped
+standard-cell netlist.
 
 ### Running synthesis
 
 Install Yosys and make sure `yosys` is available on `PATH`. From the repository
-root, run:
+root, run the basic FIFO flow:
 
 ```sh
 ./flow.sh syn
 ```
 
-Alternatively, run the synthesis script from this directory:
+Select either bidirectional top by name:
 
 ```sh
-cd syn
-./syn_asic.sh
+./flow.sh syn async_bidir_fifo
+./flow.sh syn async_bidir_ramif_fifo
 ```
 
-The script accepts an optional Yosys script path relative to `syn/`, for
-example `./syn_asic.sh ./fifo.ys`. The flow reads the RTL listed in `fifo.ys`,
-runs `synth -top async_fifo`, maps flip-flops and logic using `cmos.lib`, then
-emits the Verilog netlist. The generated netlist is a build artifact and is not
-the RTL source of record.
+The same targets can be run directly with `./syn/syn_asic.sh <top>`. Each flow
+reads the RTL for its target, runs `synth`, maps flip-flops and logic using
+`cmos.lib`, then emits a top-specific netlist (for example,
+`syn/async_bidir_fifo/async_bidir_fifo_syn.v`). Generated netlists are build
+artifacts, not the RTL source of record.
 
 This is a logical synthesis and technology-mapping flow only. It does not run
 static timing analysis, place and route, or apply the example CDC constraints
 below. Use the target FPGA/ASIC implementation flow to apply and validate
-device-specific timing and CDC constraints. The current script synthesizes only
-the `async_fifo` top level with its default parameters; the bidirectional
-wrappers are not included in this synthesis script.
+device-specific timing and CDC constraints. The `async_fifo` CDC constraints
+below are implementation examples; they are not consumed by any of these Yosys
+flows.
 
 ## CDC bus-coherence constraints
 

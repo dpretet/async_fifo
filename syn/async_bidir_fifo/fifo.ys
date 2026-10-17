@@ -1,0 +1,14 @@
+# Read RTL sources for the internal-memory bidirectional FIFO.
+read -sv2012 ../../rtl/async_bidir_fifo.v
+read -sv2012 ../../rtl/fifomem_dp.v
+read -sv2012 ../../rtl/rptr_empty.v
+read -sv2012 ../../rtl/sync_ptr.v
+read -sv2012 ../../rtl/wptr_full.v
+
+# Synthesize and map the FIFO to the shared standard-cell library.
+synth -top async_bidir_fifo
+techmap +/adff2dff.v; opt
+dfflibmap -liberty ../cmos.lib
+abc -liberty ../cmos.lib
+clean
+write_verilog async_bidir_fifo_syn.v

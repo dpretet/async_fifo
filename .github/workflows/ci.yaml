@@ -1,22 +1,28 @@
-name: Async_FIFO
-on: [push]
+name: Async FIFO CI
+on:
+  push:
+  pull_request:
 jobs:
-  Lint:
+  lint:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - run: brew install verilator
       - run: ./flow.sh lint
-  Simulation:
+
+  simulation:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - run: brew install verilator
       - run: brew install icarus-verilog
       - run: ./flow.sh sim
-  Synthesis:
+
+  synthesis:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - run: brew install yosys
-      - run: ./flow.sh syn
+      - run: ./flow.sh syn async_fifo
+      - run: ./flow.sh syn async_bidir_fifo
+      - run: ./flow.sh syn async_bidir_ramif_fifo

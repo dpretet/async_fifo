@@ -27,7 +27,8 @@ From the repository root:
 * ``./flow.sh sim`` runs the directed and randomized SVUT/Icarus tests. The
   same test and cleanup commands are available directly as
   ``./sim/run.sh test`` and ``./sim/run.sh clean``.
-* ``./flow.sh syn`` runs the Yosys ASIC synthesis script.
+* ``./flow.sh syn [async_fifo|async_bidir_fifo|async_bidir_ramif_fifo]`` runs
+  the selected Yosys synthesis flow (default: ``async_fifo``).
 
 Run checks relevant to the change and report tools that are unavailable. The
 lint wrapper interprets Verilator's log rather than its exit status: it allows

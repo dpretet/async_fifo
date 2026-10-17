@@ -1,25 +1,27 @@
 #!/usr/bin/env bash
 
-# -e: exit if one command fails
-# -o pipefail: causes a pipeline to fail if any command fails
-set -e -o pipefail
+set -euo pipefail
 
-design="./fifo.ys"
+SYN_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+target="${1:-async_fifo}"
 
-# if [[ ! -f "./vsclib013.lib" ]]; then
-    # echo "INFO: Download library for synthesis"
-    # wget http://www.vlsitechnology.org/synopsys/vsclib013.lib
-# fi
+case "$target" in
+    async_fifo|async_bidir_fifo|async_bidir_ramif_fifo)
+        design_dir="$SYN_DIR/$target"
+        ;;
+    *)
+        echo "Unknown synthesis target: $target" >&2
+        echo "Choose async_fifo, async_bidir_fifo, or async_bidir_ramif_fifo." >&2
+        exit 2
+        ;;
+esac
 
-# Check if a design is specified
-if [[ -n $1 ]]; then
-    echo "INFO: will start $1 synthesis"
-    design="$1"
+if [[ ! -f "$design_dir/fifo.ys" ]]; then
+    echo "Missing Yosys script: $design_dir/fifo.ys" >&2
+    exit 1
 fi
 
-echo "INFO: Start synthesis flow"
+cd "$design_dir"
+echo "INFO: Start Yosys synthesis for $target"
 yosys -V
-
-yosys "$design"
-
-exit 0
+yosys fifo.ys
