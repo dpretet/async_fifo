@@ -10,8 +10,8 @@ usage() {
 Usage: ./run.sh test|clean
 
 Commands:
-  test   Run the directed tests and three randomized clock configurations.
-  clean  Remove simulation waveforms, executables, and the test log.
+  test   Run the Icarus suites and the Verilator coverage-enabled directed suite.
+  clean  Remove waveforms, executables, coverage outputs, and the test log.
 
 Set LOG_FILE to override the default log path (relative paths are under sim/).
 EOF
@@ -24,6 +24,22 @@ run_test() {
     printf 'Running: %s\n' "$label"
     printf '=== %s ===\n' "$label" >> "$LOG_FILE"
     "$@" >> "$LOG_FILE" 2>&1
+}
+
+run_verilator_coverage() {
+    verilator \
+        --cc --exe --build -j 0 \
+        --Mdir obj_dir \
+        --top-module async_fifo_directed_unit_test \
+        --timing --assert --coverage --trace \
+        +1800-2012ext+sv +1800-2005ext+v \
+        -Wall -Wpedantic \
+        -Wno-UNUSED -Wno-UNDRIVEN -Wno-PINCONNECTEMPTY \
+        -Wno-VARHIDDEN -Wno-lint \
+        -f files.f async_fifo_directed_unit_test.sv sim_main.cpp &&
+    ./obj_dir/Vasync_fifo_directed_unit_test &&
+    verilator_coverage --report summary coverage.dat &&
+    verilator_coverage --annotate cov_annot coverage.dat
 }
 
 run_tests() {
@@ -42,6 +58,8 @@ run_tests() {
     run_test "Random test: write and read clocks 4ns" \
         svutRun -f files.f -t ./async_fifo_random_unit_test.sv \
             -define "CLK_I=4;CLK_O=4" || command_failed=1
+    run_test "Directed suite with Verilator coverage" \
+        run_verilator_coverage || command_failed=1
 
     if (( command_failed )) || grep -Eiq 'ERROR:|FAILURE:|FATAL:|error:' "$LOG_FILE"; then
         printf 'FAIL: simulation reported an error (see %s)\n' "$LOG_FILE"
@@ -53,7 +71,8 @@ run_tests() {
 }
 
 clean() {
-    rm -f ./*.vcd ./*.lxt* ./*.vvp* ./*.out "$LOG_FILE"
+    rm -f ./*.vcd ./*.lxt* ./*.vvp* ./*.out ./*.dat ./*.info "$LOG_FILE"
+    rm -rf ./obj_dir ./cov_annot
     printf 'SUCCESS: simulation artifacts and log removed\n'
 }
 

@@ -10,12 +10,23 @@ From the repository root:
 ```
 
 The test command runs the directed suite and three randomized clock
-configurations. Combined simulator output is written to `sim/svut.log`; the
-script returns a failing status if a simulator command fails or an error marker
-appears in the log. `./flow.sh sim` and `./flow.sh clean` provide the same
-operations through the repository flow.
+configurations with Icarus, then runs the directed suite with Verilator and
+collects its functional coverage. Combined simulator output is written to
+`sim/svut.log`; the Verilator run also writes `sim/coverage.dat` and annotated
+source under `sim/cov_annot/`. The script returns a failing status if a
+simulator command fails or an error marker appears in the log. `./flow.sh sim`
+and `./flow.sh clean` provide the same operations through the repository flow.
 
-The simulation requires Icarus Verilog and SVUT (`svutRun`) on `PATH`.
+The simulation requires Icarus Verilog, SVUT (`svutRun`), Verilator, and
+`verilator_coverage` on `PATH`. Verilator also needs a C++ compiler with C++20
+support for timing-enabled simulation.
+
+To inspect the functional coverage separately, run from `sim/`:
+
+```sh
+verilator_coverage --report summary coverage.dat
+verilator_coverage --annotate cov_annot coverage.dat
+```
 
 ## Test suites
 

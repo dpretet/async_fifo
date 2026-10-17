@@ -1,14 +1,16 @@
 #include <memory>
 #include "verilated.h"
 #include "verilated_cov.h"
-#include "Vasync_fifo_unit_test.h"
+#include "Vasync_fifo_directed_unit_test.h"
 
 int main(int argc, char** argv) {
     Verilated::debug(0);
     const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
     contextp->commandArgs(argc, argv);
+    contextp->traceEverOn(true);
 
-    const std::unique_ptr<Vasync_fifo_unit_test> topp{new Vasync_fifo_unit_test{contextp.get()}};
+    const std::unique_ptr<Vasync_fifo_directed_unit_test> topp{
+        new Vasync_fifo_directed_unit_test{contextp.get()}};
 
     while (!contextp->gotFinish()) {
         topp->eval();
