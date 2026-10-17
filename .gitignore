@@ -1,9 +1,14 @@
 *.out
 *.vcd
+*.fst
 *.lxt
 .DS_Store
 tags
 lint.log script src
 async_fifo_syn.v
-lint.log
-sim/svut.log
+*.log
+script/.svut/
+sim/obj_dir/
+sim/cov_annot/
+sim/*.dat
+sim/*.info
